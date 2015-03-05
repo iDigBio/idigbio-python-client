@@ -9,7 +9,7 @@ def read(*paths):
 
 setup(
     name='idigbio',
-    version='0.1.0',
+    version='0.2.1',
     description='Python Client for the iDigBio Search API',
     url='http://github.com/idigbio/idigbio-python-client/',
     license='MIT',
