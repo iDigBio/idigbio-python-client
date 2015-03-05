@@ -10,8 +10,7 @@ def read(*paths):
 setup(
     name='idigbio',
     version='0.1.0',
-    description='Python Client of iDigBio Search API',
-    long_description=(read('README.md')),
+    description='Python Client for the iDigBio Search API',
     url='http://github.com/idigbio/idigbio-python-client/',
     license='MIT',
     author='Alex Thompson',
