@@ -11,9 +11,7 @@ setup(
     name='idigbio',
     version='0.1.0',
     description='Python Client of iDigBio Search API',
-    long_description=(read('README.rst') + '\n\n' +
-                      read('HISTORY.rst') + '\n\n' +
-                      read('AUTHORS.rst')),
+    long_description=(read('README.md')),
     url='http://github.com/idigbio/idigbio-python-client/',
     license='MIT',
     author='Alex Thompson',
