@@ -68,13 +68,35 @@ def main():
     t = datetime.now()
     print api.search_records().shape
     print datetime.now() - t
+
     t = datetime.now()
     print api.search_records(limit=1000).shape
     print datetime.now() - t
+
+    t = datetime.now()
+    print api.search_records(limit=10000).shape
+    print datetime.now() - t    
+
     t = datetime.now()
     print api.search_records(limit=100000).shape
     print datetime.now() - t
+
     t = datetime.now()
+    print api.search_media().shape
+    print datetime.now() - t
+
+    t = datetime.now()
+    print api.search_media(limit=1000).shape
+    print datetime.now() - t
+
+    t = datetime.now()
+    print api.search_media(limit=10000).shape   
+    print datetime.now() - t
+
+    t = datetime.now()
+    print api.search_media(limit=100000).shape
+    print datetime.now() - t
+   
 
 if __name__ == '__main__':
     main()
