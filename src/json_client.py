@@ -4,11 +4,11 @@ import urllib
 import traceback
 import os
 
-disable_images = False
+global_disable_images = False
 try:
     import PIL.Image as Image
 except:
-    disable_images = True
+    global_disable_images = True
 
 try:
     from cStringIO import StringIO
@@ -25,8 +25,9 @@ class ImagesDisabledException(Exception):
     pass
 
 class iDigBioMap(object):
-    def __init__(self,api,rq={},style=None,t="auto"):
+    def __init__(self,api,rq={},style=None,t="auto",disable_images=False):
         self.__api = api
+        self._disable_images = disable_images or global_disable_images
         self._map_def = self.__api._api_post("/v2/mapping",rq=rq,style=style,type=t)
         if self._map_def is None:
             raise MapNotCreatedException()
@@ -43,7 +44,7 @@ class iDigBioMap(object):
         return self.__api._api_get("/v2/mapping/{0}/{1}/{2}/{3}.grid.json".format(self._short_code,z,x,y))        
 
     def png_tile(self,z,x,y):
-        if disable_images:
+        if self._disable_images:
             raise ImagesDisabledException()
         tile = self.__api._api_get("/v2/mapping/{0}/{1}/{2}/{3}.png".format(self._short_code,z,x,y),raw=True)
         if tile is None:
@@ -52,11 +53,11 @@ class iDigBioMap(object):
             return Image.open(StringIO(tile))
 
     def points(self,lat,lon,zoom,sort=None,limit=100,offset=None):
-        return self.__api._api_post("/v2/mapping/{0}/{1}/{2}/{3}.grid.json".format(self._short_code,lat=lat,lon=lon,zoom=zoom,sort=sort,limit=limit,offset=offset))
+        return self.__api._api_get("/v2/mapping/{0}/points".format(self._short_code),lat=lat,lon=lon,zoom=zoom,sort=sort,limit=limit,offset=offset)
 
     def save_map_image(self, filename, zoom):
         s = requests.Session()
-        if disable_images:
+        if self._disable_images:
             raise ImagesDisabledException()        
         tiles = range(0,2**zoom)
         im = Image.new("RGB", (len(tiles)*256,len(tiles)*256))
@@ -95,14 +96,17 @@ class iDbApiJson(object):
             raw = kwargs["raw"]
             del kwargs["raw"]
 
-        for arg in kwargs:
+        for arg in kwargs.keys():
             if isinstance(kwargs[arg],(dict,list)):
                 kwargs[arg] = json.dumps(kwargs[arg])
+            elif kwargs[arg] is None:
+                del kwargs[arg]
         qs = urllib.urlencode(kwargs)
         while retries > 0:
             try:
-                # print self._api_url, slug, qs
-                r = self.s.get(self._api_url + slug + qs)
+                if self.debug:
+                    print self._api_url + slug + "?" + qs
+                r = self.s.get(self._api_url + slug + "?" + qs)
                 r.raise_for_status()
                 if raw:
                     return r.content
@@ -121,10 +125,15 @@ class iDbApiJson(object):
             raw = kwargs["raw"]
             del kwargs["raw"]
 
+        for arg in kwargs.keys():
+            if kwargs[arg] is None:
+                del kwargs[arg]
+
         while retries > 0:
             try:
                 body = json.dumps(kwargs)
-                # print self._api_url, slug, body
+                if self.debug:
+                    print self._api_url, slug, qs
                 r = self.s.post(self._api_url + slug,data=body)
                 r.raise_for_status()
                 if raw:
@@ -171,27 +180,11 @@ class iDbApiJson(object):
         """        
         return self._api_post("/v2/search/records",rq=rq,limit=limit,offset=offset,sort=sort,fields=fields,fields_exclude=fields_exclude)
 
-    def create_map(self,rq={},style=None,t="auto"):
-        return iDigBioMap(self,rq=rq,style=style,t=t)
+    def create_map(self,rq={},style=None,t="auto",disable_images=False):
+        return iDigBioMap(self,rq=rq,style=style,t=t,disable_images=disable_images)
 
 def main():
     api = iDbApiJson(debug=True)
-    assert api.view("records","bc5510a4-4cc5-4731-a023-8827fdf58e61") is not None
-    assert api.search_records() is not None
-    m = api.create_map()
-    assert m is not None
-    assert m.definition() is not None
-    assert m.json_tile(1,0,0) is not None
-    assert m.utf8grid_tile(1,0,0) is not None
-    if not disable_images:
-        assert m.png_tile(1,0,0) is not None
-        m.save_map_image("test_map",2)
-        assert os.path.exists("test_map.png")
-    else:
-        try:
-            m.png_tile(1,0,0)
-        except Exception,e:
-            assert isinstance(e,ImagesDisabledException)
 
 if __name__ == '__main__':
     main()
