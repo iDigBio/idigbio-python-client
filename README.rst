@@ -13,6 +13,7 @@ A python client for the idigbio v2 API
 
     pip install idigbio
 
+For documentation of the endpoint parameters go to: https://github.com/idigbio/idigbio-search-api/wiki
 
 Two Forms
 ---------
