@@ -1,7 +1,7 @@
 import unittest
 import pandas
 
-from src.pandas_client import iDbApiPandas
+from idigbio.pandas_client import iDbApiPandas
 
 class TestIDbApiPandas(unittest.TestCase):
     def test___init__(self):

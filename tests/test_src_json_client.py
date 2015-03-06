@@ -2,7 +2,7 @@ import unittest
 import os
 import sys
 
-from src.json_client import iDbApiJson, ImagesDisabledException
+from idigbio.json_client import iDbApiJson, ImagesDisabledException
 
 class TestIDigBioMap(unittest.TestCase):
     def test___init__(self):
