@@ -1,8 +1,14 @@
 import requests
 import json
-import urllib
 import traceback
 import os
+
+try:
+    # Python 2
+    from urllib import urlencode
+except:
+    # Python 3
+    from urllib.parse import urlencode
 
 global_disable_images = False
 try:
@@ -11,9 +17,15 @@ except:
     global_disable_images = True
 
 try:
-    from cStringIO import StringIO
+    # Python 2 C
+    from cStringIO import StringIO as io_ify
 except:
-    from StringIO import StringIO
+    try:
+        # Python 2 native
+        from StringIO import StringIO as io_ify
+    except:
+        # Python 3
+        from io import BytesIO as io_ify
 
 class BadEnvException(Exception):
     pass
@@ -50,7 +62,7 @@ class iDigBioMap(object):
         if tile is None:
             return None
         else:
-            return Image.open(StringIO(tile))
+            return Image.open(io_ify(tile))
 
     def points(self,lat,lon,zoom,sort=None,limit=100,offset=None):
         return self.__api._api_get("/v2/mapping/{0}/points".format(self._short_code),lat=lat,lon=lon,zoom=zoom,sort=sort,limit=limit,offset=offset)
@@ -65,11 +77,12 @@ class iDigBioMap(object):
             for y in tiles:
                 r = s.get("http://b.tile.openstreetmap.org/{z}/{x}/{y}.png".format(z=zoom, x=x, y=y))
                 r.raise_for_status()
-                bim = Image.open(StringIO(r.content))                
+                bim = Image.open(io_ify(r.content))
                 tim = self.png_tile(zoom,x,y)
                 im.paste(bim, (x*256,y*256))
                 im.paste(tim, (x*256,y*256), tim)
-        im.save("{0}.png".format(filename),"PNG")        
+        im.save("{0}.png".format(filename),"PNG")
+        s.close()
 
 
 class iDbApiJson(object):
@@ -89,6 +102,9 @@ class iDbApiJson(object):
 
         self.s = requests.Session()
 
+    def __del__(self):
+        self.s.close()
+
     def _api_get(self, slug, **kwargs):
         retries = self.retries
         raw = False
@@ -96,16 +112,16 @@ class iDbApiJson(object):
             raw = kwargs["raw"]
             del kwargs["raw"]
 
-        for arg in kwargs.keys():
+        for arg in list(kwargs):
             if isinstance(kwargs[arg],(dict,list)):
                 kwargs[arg] = json.dumps(kwargs[arg])
             elif kwargs[arg] is None:
                 del kwargs[arg]
-        qs = urllib.urlencode(kwargs)
+        qs = urlencode(kwargs)
         while retries > 0:
             try:
                 if self.debug:
-                    print self._api_url + slug + "?" + qs
+                    print(self._api_url + slug + "?" + qs)
                 r = self.s.get(self._api_url + slug + "?" + qs)
                 r.raise_for_status()
                 if raw:
@@ -125,7 +141,7 @@ class iDbApiJson(object):
             raw = kwargs["raw"]
             del kwargs["raw"]
 
-        for arg in kwargs.keys():
+        for arg in list(kwargs):
             if kwargs[arg] is None:
                 del kwargs[arg]
 
@@ -133,7 +149,7 @@ class iDbApiJson(object):
             try:
                 body = json.dumps(kwargs)
                 if self.debug:
-                    print self._api_url, slug, qs
+                    print(self._api_url, slug, qs)
                 r = self.s.post(self._api_url + slug,data=body)
                 r.raise_for_status()
                 if raw:
@@ -182,9 +198,3 @@ class iDbApiJson(object):
 
     def create_map(self,rq={},style=None,t="auto",disable_images=False):
         return iDigBioMap(self,rq=rq,style=style,t=t,disable_images=disable_images)
-
-def main():
-    api = iDbApiJson(debug=True)
-
-if __name__ == '__main__':
-    main()

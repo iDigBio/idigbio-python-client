@@ -25,7 +25,7 @@ class TestIDbApiPandas(unittest.TestCase):
         self.assertIsNotNone(api)
         df = api.search_records(limit=10000)
         self.assertIsInstance(df,pandas.DataFrame)
-        self.assertEquals(df.shape[0],10000)
+        self.assertEqual(df.shape[0],10000)
 
 if __name__ == '__main__':
     unittest.main()

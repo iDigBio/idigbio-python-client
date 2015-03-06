@@ -1,5 +1,5 @@
 import pandas
-from json_client import iDbApiJson
+from .json_client import iDbApiJson
 
 class iDbApiPandas(object):
     def __init__(self,env="beta",debug=False):
@@ -61,42 +61,3 @@ class iDbApiPandas(object):
             return pandas.DataFrame.from_records(self.__yield_multi_call(self.__api.search_media,offsets,kwargs),index="uuid")
         else:
             return pandas.DataFrame.from_records(self.__yield_dicts(self.__api.search_media(**kwargs)),index="uuid")
-
-def main():
-    from datetime import datetime
-    api = iDbApiPandas(debug=True)
-    t = datetime.now()
-    print api.search_records().shape
-    print datetime.now() - t
-
-    t = datetime.now()
-    print api.search_records(limit=1000).shape
-    print datetime.now() - t
-
-    t = datetime.now()
-    print api.search_records(limit=10000).shape
-    print datetime.now() - t    
-
-    t = datetime.now()
-    print api.search_records(limit=100000).shape
-    print datetime.now() - t
-
-    t = datetime.now()
-    print api.search_media().shape
-    print datetime.now() - t
-
-    t = datetime.now()
-    print api.search_media(limit=1000).shape
-    print datetime.now() - t
-
-    t = datetime.now()
-    print api.search_media(limit=10000).shape   
-    print datetime.now() - t
-
-    t = datetime.now()
-    print api.search_media(limit=100000).shape
-    print datetime.now() - t
-   
-
-if __name__ == '__main__':
-    main()
