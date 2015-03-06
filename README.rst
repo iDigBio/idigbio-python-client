@@ -18,7 +18,7 @@ For documentation of the endpoint parameters go to: https://github.com/idigbio/i
 Two Forms
 ---------
 
-Returning JSON from the API as an iterator.
+Returning JSON from the API.
 
 .. code-block:: python
 
