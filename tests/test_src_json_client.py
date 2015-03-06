@@ -69,6 +69,10 @@ class TestIDbApiJson(unittest.TestCase):
         api = iDbApiJson()
         self.assertIsNotNone(api.s)
 
+    def test___del__(self):
+        api = iDbApiJson()
+        del api
+
     def test_create_map(self):
         api = iDbApiJson()
         m = api.create_map()
@@ -87,6 +91,64 @@ class TestIDbApiJson(unittest.TestCase):
     def test_view(self):
         api = iDbApiJson()
         r = api.view("records","bc5510a4-4cc5-4731-a023-8827fdf58e61")
+        self.assertIsNotNone(r)
+
+    def test_count_media(self):
+        api = iDbApiJson()
+        r = api.count_media()
+        self.assertIsNotNone(r)
+        self.assertIsInstance(r,int)
+        self.assertNotEqual(r,0)
+
+    def test_count_media_null(self):
+        api = iDbApiJson()
+        r = api.count_media(mq={"version": -1})
+        self.assertIsNotNone(r)
+        self.assertIsInstance(r,int)
+        self.assertEqual(r,0)
+
+    def test_count_records(self):
+        api = iDbApiJson()
+        r = api.count_records()
+        self.assertIsNotNone(r)
+        self.assertIsInstance(r,int)
+        self.assertNotEqual(r,0)
+
+    def test_count_records_null(self):
+        api = iDbApiJson()
+        r = api.count_records(rq={"version": -1})
+        self.assertIsNotNone(r)
+        self.assertIsInstance(r,int)
+        self.assertEqual(r,0)
+
+    def test_datehist(self):
+        api = iDbApiJson()
+        r = api.datehist()
+        self.assertIsNotNone(r)
+
+    def test_stats_api(self):
+        api = iDbApiJson()
+        r = api.stats("api")
+        self.assertIsNotNone(r)
+
+    def test_stats_digest(self):
+        api = iDbApiJson()
+        r = api.stats("digest")
+        self.assertIsNotNone(r)
+
+    def test_stats_search(self):
+        api = iDbApiJson()
+        r = api.stats("search")
+        self.assertIsNotNone(r)
+
+    def test_top_media(self):
+        api = iDbApiJson()
+        r = api.top_media()
+        self.assertIsNotNone(r)
+
+    def test_top_records(self):
+        api = iDbApiJson()
+        r = api.top_records()
         self.assertIsNotNone(r)
 
 if __name__ == '__main__':

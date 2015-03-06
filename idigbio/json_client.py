@@ -198,3 +198,29 @@ class iDbApiJson(object):
 
     def create_map(self,rq={},style=None,t="auto",disable_images=False):
         return iDigBioMap(self,rq=rq,style=style,t=t,disable_images=disable_images)
+
+    def top_records(self,rq={},top_fields=None,count=None):
+        return self._api_post("/v2/summary/top/records",rq=rq,top_fields=top_fields,count=count)
+
+    def top_media(self,mq={},rq={},top_fields=None,count=None):
+        return self._api_post("/v2/summary/top/media",mq=mq,rq=rq,top_fields=top_fields,count=count)
+
+    def count_records(self,rq={}):
+        r = self._api_post("/v2/summary/count/records",rq=rq)
+        if r is not None:
+            return r["itemCount"]
+        else:
+            return None
+
+    def count_media(self,mq={},rq={}):
+        r = self._api_post("/v2/summary/count/media",mq=mq,rq=rq)
+        if r is not None:
+            return r["itemCount"]
+        else:
+            return None
+
+    def datehist(self,rq={},top_fields=None,count=None,dateField=None,minDate=None,maxDate=None,dateInterval=None):
+        return self._api_post("/v2/summary/datehist",rq={},top_fields=None,count=None,dateField=None,minDate=None,maxDate=None,dateInterval=None)
+
+    def stats(self,t,recordset=None,dateField=None,minDate=None,maxDate=None,dateInterval=None):
+        return self._api_post("/v2/summary/stats/{0}".format(t),rq={},top_fields=None,count=None,dateField=None,minDate=None,maxDate=None,dateInterval=None)

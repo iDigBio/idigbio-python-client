@@ -11,7 +11,7 @@ def read(*paths):
 
 setup(
     name='idigbio',
-    version='0.2.1',
+    version='0.3.0',
     description='Python Client for the iDigBio Search API',
     long_description=read('README.rst') + "\n\n",
     url='http://github.com/idigbio/idigbio-python-client/',   

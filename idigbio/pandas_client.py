@@ -61,3 +61,32 @@ class iDbApiPandas(object):
             return pandas.DataFrame.from_records(self.__yield_multi_call(self.__api.search_media,offsets,kwargs),index="uuid")
         else:
             return pandas.DataFrame.from_records(self.__yield_dicts(self.__api.search_media(**kwargs)),index="uuid")
+
+    def __top_recuse(self,top_fields,top_records):
+        if len(top_fields) == 0:
+            yield [top_records["itemCount"]]
+        else:
+            for k in top_records[top_fields[0]]:
+                for v in self.__top_recuse(top_fields[1:],top_records[top_fields[0]][k]):
+                    yield [k] + v
+
+    def top_records(self,top_fields=["scientificname"],**kwargs):
+        r = self.__api.top_records(top_fields=top_fields,**kwargs)
+        return pandas.DataFrame.from_records(self.__top_recuse(top_fields,r),columns=top_fields + ["count"])
+
+    def top_media(self,top_fields=["flags"],**kwargs):
+        r = self.__api.top_media(top_fields=top_fields,**kwargs)
+        return pandas.DataFrame.from_records(self.__top_recuse(top_fields,r),columns=top_fields + ["count"])
+
+    def count_records(self,**kwargs):
+        return self.__api.count_records(**kwargs)
+
+    def count_media(self,**kwargs):
+        return self.__api.count_media(**kwargs)
+
+    # TODO
+    # def datehist(self,**kwargs):
+    #     return self._api.datehist(**kwargs)
+
+    # def stats(self,t,**kwags):
+    #     return self._api.stats(t,**kwargs)
