@@ -3,7 +3,8 @@ idigbio-python-client
 
 A python client for the idigbio v2 API
 
-.. code-block::
+.. code-block:: 
+
     pip install idigbio
 
 
