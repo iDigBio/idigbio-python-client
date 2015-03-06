@@ -15,4 +15,4 @@ Returning a Pandas Data Frame from the JSON API.
 ::
   import idigbio
   api = idigbio.pandas()
-  json_output = api.search_records()
+  pandas_output = api.search_records()
