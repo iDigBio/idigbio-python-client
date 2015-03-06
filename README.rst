@@ -9,6 +9,7 @@ Two Forms
 Returning JSON from the API as an iterator.
 
 .. code-block:: python
+
     import idigbio
     api = idigbio.json()
     json_output = api.search_records()
@@ -17,6 +18,7 @@ Returning JSON from the API as an iterator.
 Returning a Pandas Data Frame from the JSON API.
 
 .. code-block:: python
+
     import idigbio
     api = idigbio.pandas()
     pandas_output = api.search_records()
