@@ -1,6 +1,12 @@
 idigbio-python-client
 =====================
 
+.. image:: https://img.shields.io/pypi/v/idigbio.svg
+    :target: https://pypi.python.org/pypi/idigbio
+
+.. image:: https://img.shields.io/travis/iDigBio/idigbio-python-client.svg
+        :target: https://travis-ci.org/iDigBio/idigbio-python-client
+
 A python client for the idigbio v2 API
 
 .. code-block:: 
