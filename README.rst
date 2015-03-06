@@ -13,7 +13,6 @@ Returning JSON from the API as an iterator.
     import idigbio
     api = idigbio.json()
     json_output = api.search_records()
-    ...
 
 Returning a Pandas Data Frame from the JSON API.
 
@@ -22,4 +21,3 @@ Returning a Pandas Data Frame from the JSON API.
     import idigbio
     api = idigbio.pandas()
     pandas_output = api.search_records()
-    ...
