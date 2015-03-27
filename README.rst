@@ -67,7 +67,7 @@ Search for a MediaRecords by record property
 
     import idigbio
     api = idigbio.json()
-    record_list = api.search_media(rq={"scientificname": "puma concolor", "hasImage": True})
+    mediarecord_list = api.search_media(rq={"scientificname": "puma concolor", "hasImage": True})
     
 Create a heat map for a genus
 
