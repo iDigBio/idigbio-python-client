@@ -33,3 +33,88 @@ Returning a Pandas Data Frame from the JSON API.
     import idigbio
     api = idigbio.pandas()
     pandas_output = api.search_records()
+    
+Examples
+--------
+
+View a Record By UUID
+
+.. code-block:: python
+
+    import idigbio
+    api = idigbio.json()
+    record = api.view("records","1db58713-1c7f-4838-802d-be784e444c4a")
+
+Search for a Record by scientific name
+
+.. code-block:: python
+
+    import idigbio
+    api = idigbio.json()
+    record_list = api.search_records(rq={"scientificname": "puma concolor"})
+    
+Search for Records that have images
+
+.. code-block:: python
+
+    import idigbio
+    api = idigbio.json()
+    record_list = api.search_records(rq={"scientificname": "puma concolor", "hasImage": True})
+    
+Search for a MediaRecords by record property
+
+.. code-block:: python
+
+    import idigbio
+    api = idigbio.json()
+    record_list = api.search_media(rq={"scientificname": "puma concolor", "hasImage": True})
+    
+Create a heat map for a genus
+
+.. code-block:: python
+
+    import idigbio
+    api = idigbio.json()
+    m = api.create_map(rq={"genus": "acer"}, t="geohash")
+    m.save_map_image("acer_map_geohash", 2)
+    
+Create a point map for a genus
+
+.. code-block:: python
+
+    import idigbio
+    api = idigbio.json()
+    m = api.create_map(rq={"genus": "acer"}, t="points")    
+    m.save_map_image("acer_map_points", 2)
+    
+Create a summary of kingdom and phylum data
+
+.. code-block:: python
+
+    import idigbio
+    api = idigbio.json()
+    summary_data = api.top_records(fields=["kingdom","phylum"])
+    
+Get the number of Records for a search by scientific name
+
+.. code-block:: python
+
+    import idigbio
+    api = idigbio.json()
+    count = api.count_records(rq={"scientificname": "puma concolor"})
+    
+Get the number of MediaRecords for a search by scientific name
+
+.. code-block:: python
+
+    import idigbio
+    api = idigbio.json()
+    count = api.count_media(rq={"scientificname": "puma concolor"})
+    
+Get the histogram of Collection Dates for a search by record property, for the last 10 years
+
+.. code-block:: python
+
+    import idigbio
+    api = idigbio.json()
+    histogram_data = api.datehist(rq={"scientificname": "puma concolor"},fields=["institutioncode"],minDate="2005-01-01")
