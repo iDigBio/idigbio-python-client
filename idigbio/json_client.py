@@ -142,11 +142,9 @@ class iDigBioMap(object):
             y_tiles = range(top_left_tile[1],bottom_right_tile[1]+1)
 
         if x_tiles is None:      
-            y_tiles = range(0,2**zoom)
+            x_tiles = range(0,2**zoom)
         if y_tiles is None:
             y_tiles = range(0,2**zoom)
-
-        print zoom,x_tiles,y_tiles
 
         s = requests.Session()
         if self._disable_images:
