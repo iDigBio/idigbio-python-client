@@ -27,6 +27,52 @@ except:
         # Python 3
         from io import BytesIO as io_ify
 
+import math
+
+def level_dic():
+    '''
+    http://wiki.openstreetmap.org/wiki/Zoom_levels
+    '''
+    # return data
+    data = {0: 360.0,
+            1: 180.0,
+            2: 90.0,
+            3: 45.0,
+            4: 22.5,
+            5: 11.25,
+            6: 5.625,
+            7: 2.813,
+            8: 1.406,
+            9: 0.703,
+            10: 0.352,
+            11: 0.176,
+            12: 0.088,
+            13: 0.044,
+            14: 0.022,
+            15: 0.011,
+            16: 0.005,
+            17: 0.003,
+            18: 0.001,
+            19: 0.0005}
+    return data
+
+def getzoom(min_lon, max_lon, min_lat, max_lat):
+    data = level_dic()  # our presets
+    r = 4
+    print round(max_lat - min_lat, r),round(max_lon - min_lon, r)
+    dne = max(round(max_lat - min_lat, r),round(max_lon - min_lon, r))  # ne: North East point
+    mylist = [round(i, r) for i in data.values()] + [dne]
+    new = sorted(mylist, reverse=True)
+    return new.index(dne)
+
+
+def deg2num(lat_deg, lon_deg, zoom):
+  lat_rad = math.radians(lat_deg)
+  n = 2.0 ** zoom
+  xtile = int((lon_deg + 180.0) / 360.0 * n)
+  ytile = int((1.0 - math.log(math.tan(lat_rad) + (1 / math.cos(lat_rad))) / math.pi) / 2.0 * n)
+  return (xtile, ytile)
+
 class BadEnvException(Exception):
     pass
 
@@ -67,20 +113,57 @@ class iDigBioMap(object):
     def points(self,lat,lon,zoom,sort=None,limit=100,offset=None):
         return self.__api._api_get("/v2/mapping/{0}/points".format(self._short_code),lat=lat,lon=lon,zoom=zoom,sort=sort,limit=limit,offset=offset)
 
-    def save_map_image(self, filename, zoom):
+    def save_map_image(self, filename, zoom, bbox=None):
+        x_tiles = None
+        y_tiles = None
+
+        if zoom is None and bbox is not None:
+            zoom = getzoom(
+                bbox["bottom_right"]["lat"],
+                bbox["top_left"]["lat"],
+                bbox["top_left"]["lon"],
+                bbox["bottom_right"]["lon"]
+            )
+
+        if bbox is not None:
+            top_left_tile = deg2num(
+                bbox["top_left"]["lat"],
+                bbox["top_left"]["lon"],
+                zoom
+            )
+
+            bottom_right_tile = deg2num(
+                bbox["bottom_right"]["lat"],
+                bbox["bottom_right"]["lon"],
+                zoom
+            )
+
+            x_tiles = range(top_left_tile[0],bottom_right_tile[0]+1)
+            y_tiles = range(top_left_tile[1],bottom_right_tile[1]+1)
+
+        if x_tiles is None:      
+            y_tiles = range(0,2**zoom)
+        if y_tiles is None:
+            y_tiles = range(0,2**zoom)
+
+        print zoom,x_tiles,y_tiles
+
         s = requests.Session()
         if self._disable_images:
-            raise ImagesDisabledException()        
-        tiles = range(0,2**zoom)
-        im = Image.new("RGB", (len(tiles)*256,len(tiles)*256))
-        for x in tiles:
-            for y in tiles:
+            raise ImagesDisabledException()
+        im = Image.new("RGB", (len(x_tiles)*256,len(y_tiles)*256))
+        x_tile_count = 0
+        for x in x_tiles:
+            y_tile_count = 0
+            for y in y_tiles:
                 r = s.get("http://b.tile.openstreetmap.org/{z}/{x}/{y}.png".format(z=zoom, x=x, y=y))
                 r.raise_for_status()
                 bim = Image.open(io_ify(r.content))
                 tim = self.png_tile(zoom,x,y)
-                im.paste(bim, (x*256,y*256))
-                im.paste(tim, (x*256,y*256), tim)
+                im.paste(bim, (x_tile_count*256,y_tile_count*256))
+                im.paste(tim, (x_tile_count*256,y_tile_count*256), tim)
+                y_tile_count += 1
+            x_tile_count += 1
         im.save("{0}.png".format(filename),"PNG")
         s.close()
 
@@ -224,3 +307,12 @@ class iDbApiJson(object):
 
     def stats(self,t,recordset=None,dateField=None,minDate=None,maxDate=None,dateInterval=None):
         return self._api_post("/v2/summary/stats/{0}".format(t),rq={},top_fields=None,count=None,dateField=None,minDate=None,maxDate=None,dateInterval=None)
+
+
+if __name__ == '__main__':
+    api = iDbApiJson()
+    bbox = {"type": "geo_bounding_box", "bottom_right": {"lat": 29.642979999999998, "lon": -82.00}, "top_left": {"lat": 29.66298, "lon": -82.35315800000001}}
+    m = api.create_map(
+        rq={"geopoint": bbox}
+    )
+    m.save_map_image("test.png", None, bbox=bbox)

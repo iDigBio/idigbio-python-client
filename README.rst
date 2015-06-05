@@ -86,6 +86,19 @@ Create a point map for a genus
     api = idigbio.json()
     m = api.create_map(rq={"genus": "acer"}, t="points")    
     m.save_map_image("acer_map_points", 2)
+
+Create a zoomed in point map for a bounding box
+
+.. code-block:: python
+
+    import idigbio
+    api = idigbio.json()
+    bbox = {"type": "geo_bounding_box", "bottom_right": {"lat": 29.642979999999998, "lon": -82.00}, "top_left": {"lat": 29.66298, "lon": -82.35315800000001}}
+    m = api.create_map(
+        rq={"geopoint": bbox}
+    )
+    m.save_map_image("test.png", None, bbox=bbox)
+
     
 Create a summary of kingdom and phylum data
 
