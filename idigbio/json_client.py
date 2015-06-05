@@ -59,7 +59,6 @@ def level_dic():
 def getzoom(min_lon, max_lon, min_lat, max_lat):
     data = level_dic()  # our presets
     r = 4
-    print round(max_lat - min_lat, r),round(max_lon - min_lon, r)
     dne = max(round(max_lat - min_lat, r),round(max_lon - min_lon, r))  # ne: North East point
     mylist = [round(i, r) for i in data.values()] + [dne]
     new = sorted(mylist, reverse=True)
