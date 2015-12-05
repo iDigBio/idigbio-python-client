@@ -2,9 +2,9 @@ import pandas
 from .json_client import iDbApiJson
 
 class iDbApiPandas(object):
-    def __init__(self,env="beta",debug=False):
+    def __init__(self,env="prod",debug=False):
         """
-            env: Which environment to use. Defaults to beta, the only currently supported string."
+            env: Which environment to use. Defaults to prod."
         """
         self.__api = iDbApiJson(env=env,debug=debug)
 

@@ -168,13 +168,15 @@ class iDigBioMap(object):
 class iDbApiJson(object):
     """ iDigBio Search API Json Client """
 
-    def __init__(self,env="beta",debug=False,retries=3):
+    def __init__(self,env="prod",debug=False,retries=3):
         """
-            env: Which environment to use. Defaults to beta, the only currently supported string."
+            env: Which environment to use. Defaults to prod."
         """
         self.debug = debug
         self.retries = retries
 
+        if env == "prod":
+            self._api_url = "http://search.idigbio.org"
         if env == "beta":
             self._api_url = "http://beta-search.idigbio.org"
         else:
