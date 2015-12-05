@@ -177,7 +177,7 @@ class iDbApiJson(object):
 
         if env == "prod":
             self._api_url = "http://search.idigbio.org"
-        if env == "beta":
+        elif env == "beta":
             self._api_url = "http://beta-search.idigbio.org"
         else:
             raise BadEnvException
