@@ -1,17 +1,19 @@
+import logging
 import pandas
 from .json_client import iDbApiJson
 from itertools import chain, imap
 
 MAX_BATCH_SIZE = 5000
 
+log = logging.getLogger(__name__)
 
 
 class iDbApiPandas(object):
-    def __init__(self, env="prod", debug=False):
+    def __init__(self, env="prod"):
         """
             env: Which environment to use. Defaults to prod."
         """
-        self.__api = iDbApiJson(env=env, debug=debug)
+        self.__api = iDbApiJson(env=env)
 
     def __search_base(self, apifn, **kwargs):
         def yd(data):
@@ -22,9 +24,11 @@ class iDbApiPandas(object):
             def one(offset, total_limit):
                 while offset < total_limit:
                     batch = min(MAX_BATCH_SIZE, total_limit - offset)
+                    log.debug("Querying at offset %s", offset)
                     data = apifn(offset=offset, limit=batch, **kwargs)
                     yield data
                     if len(data["items"]) < batch:
+                        log.debug("Exiting early, no more records on server")
                         break
                     offset += batch
             datagen = one(kwargs.pop("offset", 0), kwargs.pop("limit"))

@@ -1,3 +1,5 @@
+import logging
+import math
 import requests
 import json
 import traceback
@@ -26,7 +28,7 @@ except:
         # Python 3
         from io import BytesIO as io_ify
 
-import math
+log = logging.getLogger(__name__)
 
 
 def level_dic():
@@ -185,11 +187,10 @@ class iDigBioMap(object):
 class iDbApiJson(object):
     """ iDigBio Search API Json Client """
 
-    def __init__(self, env="prod", debug=False, retries=3):
+    def __init__(self, env="prod", retries=3):
         """
             env: Which environment to use. Defaults to prod."
         """
-        self.debug = debug
         self.retries = retries
 
         if env == "prod":
@@ -219,8 +220,7 @@ class iDbApiJson(object):
         qs = urlencode(kwargs)
         while retries > 0:
             try:
-                if self.debug:
-                    print(self._api_url + slug + "?" + qs)
+                log.debug("Querying: %r", self._api_url + slug + "?" + qs)
                 r = self.s.get(self._api_url + slug + "?" + qs)
                 r.raise_for_status()
                 if raw:
@@ -228,8 +228,7 @@ class iDbApiJson(object):
                 else:
                     return r.json()
             except:
-                if self.debug:
-                    traceback.print_exc()
+                log.debug(traceback.print_exc())
                 retries -= 1
         return None
 
@@ -247,8 +246,7 @@ class iDbApiJson(object):
         while retries > 0:
             try:
                 body = json.dumps(kwargs)
-                if self.debug:
-                    print(self._api_url, slug, qs)
+                log.debug("POSTing: %r", self._api_url, slug)
                 r = self.s.post(self._api_url + slug, data=body)
                 r.raise_for_status()
                 if raw:
@@ -256,8 +254,7 @@ class iDbApiJson(object):
                 else:
                     return r.json()
             except:
-                if self.debug:
-                    traceback.print_exc()
+                log.debug(traceback.print_exc())
                 retries -= 1
         return None
 
