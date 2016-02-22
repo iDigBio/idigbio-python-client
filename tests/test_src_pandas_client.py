@@ -20,12 +20,12 @@ class TestIDbApiPandas(unittest.TestCase):
         df = api.search_records()
         self.assertIsInstance(df,pandas.DataFrame)
 
-    def test_search_records_limit_10000(self):
+    def test_search_records_limit_10007(self):
         api = iDbApiPandas()
         self.assertIsNotNone(api)
-        df = api.search_records(limit=10000)
+        df = api.search_records(limit=10007)
         self.assertIsInstance(df,pandas.DataFrame)
-        self.assertEqual(df.shape[0],10000)
+        self.assertEqual(len(df),10007)
 
     def test_count_media(self):
         api = iDbApiPandas()
