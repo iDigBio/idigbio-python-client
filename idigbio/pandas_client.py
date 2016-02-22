@@ -1,5 +1,9 @@
 import pandas
 from .json_client import iDbApiJson
+from itertools import chain, imap
+
+MAX_BATCH_SIZE = 5000
+
 
 class iDbApiPandas(object):
     def __init__(self,env="prod",debug=False):
@@ -8,15 +12,33 @@ class iDbApiPandas(object):
         """
         self.__api = iDbApiJson(env=env,debug=debug)
 
-    def __yield_dicts(self,data):
-        for r in data["items"]:
-            yield r["indexTerms"]
+    def __search_base(self, apifn, **kwargs):
+        def yd(data):
+            for r in data["items"]:
+                yield r["indexTerms"]
 
-    def __yield_multi_call(self,call,offsets,kwargs):
-        for offset in offsets:
-            kwargs["offset"] = offset
-            for r in self.__yield_dicts(call(**kwargs)):
-                yield r
+        if "limit" in kwargs and kwargs["limit"] > MAX_BATCH_SIZE:
+            def one(offset, total_limit):
+                while offset < total_limit:
+                    batch = min(MAX_BATCH_SIZE, total_limit - offset)
+                    data = apifn(offset=offset, limit=batch, **kwargs)
+                    yield data
+                    if len(data["items"]) < batch:
+                        break
+                    offset += batch
+            datagen = one(kwargs.pop("offset", 0), kwargs.pop("limit"))
+            data = next(datagen)
+            if data and len(data["items"]) > 0:
+                records = chain(
+                    yd(data),
+                    chain.from_iterable(imap(yd, datagen)))
+                return pandas.DataFrame.from_records(records, index="uuid")
+        else:
+            search_result = []
+            data = apifn(**kwargs)
+            if data["itemCount"] > 0:
+                return pandas.DataFrame.from_records(yd(data), index="uuid")
+        return None
 
     def search_records(self,**kwargs):
         """
@@ -30,15 +52,7 @@ class iDbApiPandas(object):
             Returns idigbio record format (legacy api), plus additional top level keys with parsed index terms. Returns None on error.
         """
 
-        if "limit" in kwargs and kwargs["limit"] > 5000:
-            if "offset" not in kwargs:
-                kwargs["offset"] = 0
-            total_limit = kwargs["limit"]
-            kwargs["limit"] = 5000
-            offsets = [kwargs["offset"]+x for x in range(0,total_limit,5000)]
-            return pandas.DataFrame.from_records(self.__yield_multi_call(self.__api.search_records,offsets,kwargs),index="uuid")
-        else:
-            return pandas.DataFrame.from_records(self.__yield_dicts(self.__api.search_records(**kwargs)),index="uuid")
+        return self.__search_base(apifn=self.__api.search_records, **kwargs)
 
     def search_media(self,**kwargs):
         """
@@ -52,15 +66,7 @@ class iDbApiPandas(object):
 
             Returns idigbio record format (legacy api), plus additional top level keys with parsed index terms. Returns None on error.
         """
-        if "limit" in kwargs and kwargs["limit"] > 5000:
-            if "offset" not in kwargs:
-                kwargs["offset"] = 0
-            total_limit = kwargs["limit"]
-            kwargs["limit"] = 5000
-            offsets = [kwargs["offset"]+x for x in range(0,total_limit,5000)]
-            return pandas.DataFrame.from_records(self.__yield_multi_call(self.__api.search_media,offsets,kwargs),index="uuid")
-        else:
-            return pandas.DataFrame.from_records(self.__yield_dicts(self.__api.search_media(**kwargs)),index="uuid")
+        return self.__search_base(apifn=self.__api.search_media, **kwargs)
 
     def __top_recuse(self,top_fields,top_records):
         if len(top_fields) == 0:

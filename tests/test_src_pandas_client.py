@@ -27,6 +27,20 @@ class TestIDbApiPandas(unittest.TestCase):
         self.assertIsInstance(df,pandas.DataFrame)
         self.assertEqual(len(df),10007)
 
+    def test_search_no_results(self):
+        api = iDbApiPandas()
+        self.assertIsNotNone(api)
+        df = api.search_records(rq={"scientificname": "7f2caf7a-e84a3c972752"})
+        self.assertIsNone(df)
+        df = api.search_records(
+            rq={"scientificname": "7f2caf7a-e84a3c972752"}, limit=10000)
+        self.assertIsNone(df)
+        df = api.search_media(rq={"scientificname": "7f2caf7a-e84a3c972752"})
+        self.assertIsNone(df)
+        df = api.search_media(
+            rq={"scientificname": "7f2caf7a-e84a3c972752"}, limit=10000)
+        self.assertIsNone(df)
+
     def test_count_media(self):
         api = iDbApiPandas()
         self.assertIsNotNone(api)
