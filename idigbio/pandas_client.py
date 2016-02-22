@@ -5,12 +5,13 @@ from itertools import chain, imap
 MAX_BATCH_SIZE = 5000
 
 
+
 class iDbApiPandas(object):
-    def __init__(self,env="prod",debug=False):
+    def __init__(self, env="prod", debug=False):
         """
             env: Which environment to use. Defaults to prod."
         """
-        self.__api = iDbApiJson(env=env,debug=debug)
+        self.__api = iDbApiJson(env=env, debug=debug)
 
     def __search_base(self, apifn, **kwargs):
         def yd(data):
@@ -34,13 +35,12 @@ class iDbApiPandas(object):
                     chain.from_iterable(imap(yd, datagen)))
                 return pandas.DataFrame.from_records(records, index="uuid")
         else:
-            search_result = []
             data = apifn(**kwargs)
             if data["itemCount"] > 0:
                 return pandas.DataFrame.from_records(yd(data), index="uuid")
         return None
 
-    def search_records(self,**kwargs):
+    def search_records(self, **kwargs):
         """
             rq  Search Query in iDigBio Query Format, using Record Query Fields
             sort    field to sort on, pick from Record Query Fields
@@ -68,26 +68,28 @@ class iDbApiPandas(object):
         """
         return self.__search_base(apifn=self.__api.search_media, **kwargs)
 
-    def __top_recuse(self,top_fields,top_records):
+    def __top_recuse(self, top_fields, top_records):
         if len(top_fields) == 0:
             yield [top_records["itemCount"]]
         else:
             for k in top_records[top_fields[0]]:
-                for v in self.__top_recuse(top_fields[1:],top_records[top_fields[0]][k]):
+                for v in self.__top_recuse(top_fields[1:], top_records[top_fields[0]][k]):
                     yield [k] + v
 
-    def top_records(self,top_fields=["scientificname"],**kwargs):
-        r = self.__api.top_records(top_fields=top_fields,**kwargs)
-        return pandas.DataFrame.from_records(self.__top_recuse(top_fields,r),columns=top_fields + ["count"])
+    def top_records(self, top_fields=["scientificname"], **kwargs):
+        r = self.__api.top_records(top_fields=top_fields, **kwargs)
+        return pandas.DataFrame.from_records(
+            self.__top_recuse(top_fields, r), columns=top_fields + ["count"])
 
-    def top_media(self,top_fields=["flags"],**kwargs):
-        r = self.__api.top_media(top_fields=top_fields,**kwargs)
-        return pandas.DataFrame.from_records(self.__top_recuse(top_fields,r),columns=top_fields + ["count"])
+    def top_media(self, top_fields=["flags"], **kwargs):
+        r = self.__api.top_media(top_fields=top_fields, **kwargs)
+        return pandas.DataFrame.from_records(
+            self.__top_recuse(top_fields, r), columns=top_fields + ["count"])
 
-    def count_records(self,**kwargs):
+    def count_records(self, **kwargs):
         return self.__api.count_records(**kwargs)
 
-    def count_media(self,**kwargs):
+    def count_media(self, **kwargs):
         return self.__api.count_media(**kwargs)
 
     # TODO

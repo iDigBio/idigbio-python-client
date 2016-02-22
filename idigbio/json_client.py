@@ -1,7 +1,6 @@
 import requests
 import json
 import traceback
-import os
 
 try:
     # Python 2
@@ -28,6 +27,7 @@ except:
         from io import BytesIO as io_ify
 
 import math
+
 
 def level_dic():
     '''
@@ -56,36 +56,43 @@ def level_dic():
             19: 0.0005}
     return data
 
+
 def getzoom(min_lon, max_lon, min_lat, max_lat):
     data = level_dic()  # our presets
     r = 4
-    dne = max(round(max_lat - min_lat, r),round(max_lon - min_lon, r))  # ne: North East point
+    dne = max(round(max_lat - min_lat, r),
+              round(max_lon - min_lon, r))  # ne: North East point
     mylist = [round(i, r) for i in data.values()] + [dne]
     new = sorted(mylist, reverse=True)
     return new.index(dne)
 
 
 def deg2num(lat_deg, lon_deg, zoom):
-  lat_rad = math.radians(lat_deg)
-  n = 2.0 ** zoom
-  xtile = int((lon_deg + 180.0) / 360.0 * n)
-  ytile = int((1.0 - math.log(math.tan(lat_rad) + (1 / math.cos(lat_rad))) / math.pi) / 2.0 * n)
-  return (xtile, ytile)
+    lat_rad = math.radians(lat_deg)
+    n = 2.0 ** zoom
+    xtile = int((lon_deg + 180.0) / 360.0 * n)
+    ytile = int((1.0 - math.log(math.tan(lat_rad) + (1 / math.cos(lat_rad))) / math.pi) / 2.0 * n)
+    return (xtile, ytile)
+
 
 class BadEnvException(Exception):
     pass
 
+
 class MapNotCreatedException(Exception):
     pass
+
 
 class ImagesDisabledException(Exception):
     pass
 
+
 class iDigBioMap(object):
-    def __init__(self,api,rq={},style=None,t="auto",disable_images=False):
+    def __init__(self, api, rq={}, style=None, t="auto", disable_images=False):
         self.__api = api
         self._disable_images = disable_images or global_disable_images
-        self._map_def = self.__api._api_post("/v2/mapping",rq=rq,style=style,type=t)
+        self._map_def = self.__api._api_post(
+            "/v2/mapping", rq=rq, style=style, type=t)
         if self._map_def is None:
             raise MapNotCreatedException()
         self._short_code = self._map_def["shortCode"]
@@ -94,23 +101,31 @@ class iDigBioMap(object):
     def definition(self):
         return self.__api._api_get("/v2/mapping/{0}".format(self._short_code))
 
-    def json_tile(self,z,x,y):
-        return self.__api._api_get("/v2/mapping/{0}/{1}/{2}/{3}.json".format(self._short_code,z,x,y))        
+    def json_tile(self, z, x, y):
+        return self.__api._api_get(
+            "/v2/mapping/{0}/{1}/{2}/{3}.json".format(
+                self._short_code, z, x, y))
 
-    def utf8grid_tile(self,z,x,y):
-        return self.__api._api_get("/v2/mapping/{0}/{1}/{2}/{3}.grid.json".format(self._short_code,z,x,y))        
+    def utf8grid_tile(self, z, x, y):
+        return self.__api._api_get(
+            "/v2/mapping/{0}/{1}/{2}/{3}.grid.json".format(
+                self._short_code, z, x, y))
 
-    def png_tile(self,z,x,y):
+    def png_tile(self, z, x, y):
         if self._disable_images:
             raise ImagesDisabledException()
-        tile = self.__api._api_get("/v2/mapping/{0}/{1}/{2}/{3}.png".format(self._short_code,z,x,y),raw=True)
+        tile = self.__api._api_get(
+            "/v2/mapping/{0}/{1}/{2}/{3}.png".format(
+                self._short_code, z, x, y), raw=True)
         if tile is None:
             return None
         else:
             return Image.open(io_ify(tile))
 
-    def points(self,lat,lon,zoom,sort=None,limit=100,offset=None):
-        return self.__api._api_get("/v2/mapping/{0}/points".format(self._short_code),lat=lat,lon=lon,zoom=zoom,sort=sort,limit=limit,offset=offset)
+    def points(self, lat, lon, zoom, sort=None, limit=100, offset=None):
+        return self.__api._api_get(
+            "/v2/mapping/{0}/points".format(self._short_code),
+            lat=lat, lon=lon, zoom=zoom, sort=sort, limit=limit, offset=offset)
 
     def save_map_image(self, filename, zoom, bbox=None):
         x_tiles = None
@@ -137,38 +152,40 @@ class iDigBioMap(object):
                 zoom
             )
 
-            x_tiles = range(top_left_tile[0],bottom_right_tile[0]+1)
-            y_tiles = range(top_left_tile[1],bottom_right_tile[1]+1)
+            x_tiles = range(top_left_tile[0], bottom_right_tile[0]+1)
+            y_tiles = range(top_left_tile[1], bottom_right_tile[1]+1)
 
-        if x_tiles is None:      
-            x_tiles = range(0,2**zoom)
+        if x_tiles is None:
+            x_tiles = range(0, 2**zoom)
         if y_tiles is None:
-            y_tiles = range(0,2**zoom)
+            y_tiles = range(0, 2**zoom)
 
         s = requests.Session()
         if self._disable_images:
             raise ImagesDisabledException()
-        im = Image.new("RGB", (len(x_tiles)*256,len(y_tiles)*256))
+        im = Image.new("RGB", (len(x_tiles) * 256, len(y_tiles) * 256))
         x_tile_count = 0
         for x in x_tiles:
             y_tile_count = 0
             for y in y_tiles:
-                r = s.get("http://b.tile.openstreetmap.org/{z}/{x}/{y}.png".format(z=zoom, x=x, y=y))
+                r = s.get(
+                    "http://b.tile.openstreetmap.org/{z}/{x}/{y}.png".format(
+                        z=zoom, x=x, y=y))
                 r.raise_for_status()
                 bim = Image.open(io_ify(r.content))
-                tim = self.png_tile(zoom,x,y)
-                im.paste(bim, (x_tile_count*256,y_tile_count*256))
-                im.paste(tim, (x_tile_count*256,y_tile_count*256), tim)
+                tim = self.png_tile(zoom, x, y)
+                im.paste(bim, (x_tile_count * 256, y_tile_count * 256))
+                im.paste(tim, (x_tile_count * 256, y_tile_count * 256), tim)
                 y_tile_count += 1
             x_tile_count += 1
-        im.save("{0}.png".format(filename),"PNG")
+        im.save("{0}.png".format(filename), "PNG")
         s.close()
 
 
 class iDbApiJson(object):
     """ iDigBio Search API Json Client """
 
-    def __init__(self,env="prod",debug=False,retries=3):
+    def __init__(self, env="prod", debug=False, retries=3):
         """
             env: Which environment to use. Defaults to prod."
         """
@@ -195,7 +212,7 @@ class iDbApiJson(object):
             del kwargs["raw"]
 
         for arg in list(kwargs):
-            if isinstance(kwargs[arg],(dict,list)):
+            if isinstance(kwargs[arg], (dict, list)):
                 kwargs[arg] = json.dumps(kwargs[arg])
             elif kwargs[arg] is None:
                 del kwargs[arg]
@@ -209,7 +226,7 @@ class iDbApiJson(object):
                 if raw:
                     return r.content
                 else:
-                    return r.json()    
+                    return r.json()
             except:
                 if self.debug:
                     traceback.print_exc()
@@ -232,7 +249,7 @@ class iDbApiJson(object):
                 body = json.dumps(kwargs)
                 if self.debug:
                     print(self._api_url, slug, qs)
-                r = self.s.post(self._api_url + slug,data=body)
+                r = self.s.post(self._api_url + slug, data=body)
                 r.raise_for_status()
                 if raw:
                     return r.content
@@ -240,18 +257,19 @@ class iDbApiJson(object):
                     return r.json()
             except:
                 if self.debug:
-                    traceback.print_exc()            
+                    traceback.print_exc()
                 retries -= 1
         return None
 
-    def view(self,t,uuid):
+    def view(self, t, uuid):
         """
             t: the type to view. Supported types: records, media (mediarecords), recordsets, publishers
             uuid: the uuid to view.
         """
-        return self._api_get("/v2/view/{0}/{1}".format(t,uuid))
+        return self._api_get("/v2/view/{0}/{1}".format(t, uuid))
 
-    def search_records(self,rq={},limit=100,offset=0,sort=None,fields=None,fields_exclude=["data.*"]):
+    def search_records(self, rq={}, limit=100, offset=0,
+                       sort=None, fields=None, fields_exclude=["data.*"]):
         """
             rq  Search Query in iDigBio Query Format, using Record Query Fields
             sort    field to sort on, pick from Record Query Fields
@@ -261,10 +279,13 @@ class iDbApiJson(object):
             offset  skip results
 
             Returns idigbio record format (legacy api), plus additional top level keys with parsed index terms. Returns None on error.
-        """        
-        return self._api_post("/v2/search/records",rq=rq,limit=limit,offset=offset,sort=sort,fields=fields,fields_exclude=fields_exclude)
+        """
+        return self._api_post("/v2/search/records",
+                              rq=rq, limit=limit, offset=offset, sort=sort,
+                              fields=fields, fields_exclude=fields_exclude)
 
-    def search_media(self,mq={},rq={},limit=100,offset=0,sort=None,fields=None,fields_exclude=["data.*"]):
+    def search_media(self, mq={}, rq={}, limit=100, offset=0,
+                     sort=None, fields=None, fields_exclude=["data.*"]):
         """
             mq  Search Query in iDigBio Query Format, using Media Query Fields
             rq  Search Query in iDigBio Query Format, using Record Query Fields
@@ -275,42 +296,57 @@ class iDbApiJson(object):
             offset  skip results
 
             Returns idigbio record format (legacy api), plus additional top level keys with parsed index terms. Returns None on error.
-        """        
-        return self._api_post("/v2/search/records",rq=rq,limit=limit,offset=offset,sort=sort,fields=fields,fields_exclude=fields_exclude)
+        """
+        return self._api_post("/v2/search/records",
+                              rq=rq, limit=limit, offset=offset, sort=sort,
+                              fields=fields, fields_exclude=fields_exclude)
 
-    def create_map(self,rq={},style=None,t="auto",disable_images=False):
-        return iDigBioMap(self,rq=rq,style=style,t=t,disable_images=disable_images)
+    def create_map(self, rq={}, style=None, t="auto", disable_images=False):
+        return iDigBioMap(
+            self, rq=rq, style=style, t=t, disable_images=disable_images)
 
-    def top_records(self,rq={},top_fields=None,count=None):
-        return self._api_post("/v2/summary/top/records",rq=rq,top_fields=top_fields,count=count)
+    def top_records(self, rq={}, top_fields=None, count=None):
+        return self._api_post("/v2/summary/top/records",
+                              rq=rq, top_fields=top_fields, count=count)
 
-    def top_media(self,mq={},rq={},top_fields=None,count=None):
-        return self._api_post("/v2/summary/top/media",mq=mq,rq=rq,top_fields=top_fields,count=count)
+    def top_media(self, mq={}, rq={}, top_fields=None, count=None):
+        return self._api_post("/v2/summary/top/media", mq=mq, rq=rq,
+                              top_fields=top_fields, count=count)
 
     def count_records(self,rq={}):
-        r = self._api_post("/v2/summary/count/records",rq=rq)
+        r = self._api_post("/v2/summary/count/records", rq=rq)
         if r is not None:
             return r["itemCount"]
         else:
             return None
 
-    def count_media(self,mq={},rq={}):
-        r = self._api_post("/v2/summary/count/media",mq=mq,rq=rq)
+    def count_media(self, mq={}, rq={}):
+        r = self._api_post("/v2/summary/count/media", mq=mq, rq=rq)
         if r is not None:
             return r["itemCount"]
         else:
             return None
 
-    def datehist(self,rq={},top_fields=None,count=None,dateField=None,minDate=None,maxDate=None,dateInterval=None):
-        return self._api_post("/v2/summary/datehist",rq={},top_fields=None,count=None,dateField=None,minDate=None,maxDate=None,dateInterval=None)
+    def datehist(self, rq={}, top_fields=None, count=None, dateField=None,
+                 minDate=None, maxDate=None, dateInterval=None):
+        return self._api_post(
+            "/v2/summary/datehist",
+            rq={}, top_fields=None, count=None, dateField=None,
+            minDate=None, maxDate=None, dateInterval=None)
 
-    def stats(self,t,recordset=None,dateField=None,minDate=None,maxDate=None,dateInterval=None):
-        return self._api_post("/v2/summary/stats/{0}".format(t),rq={},top_fields=None,count=None,dateField=None,minDate=None,maxDate=None,dateInterval=None)
+    def stats(self, t, recordset=None, dateField=None,
+              minDate=None, maxDate=None, dateInterval=None):
+        return self._api_post("/v2/summary/stats/{0}".format(t),
+                              rq={}, top_fields=None, count=None,
+                              dateField=None,
+                              minDate=None, maxDate=None, dateInterval=None)
 
 
 if __name__ == '__main__':
     api = iDbApiJson()
-    bbox = {"type": "geo_bounding_box", "bottom_right": {"lat": 29.642979999999998, "lon": -82.00}, "top_left": {"lat": 29.66298, "lon": -82.35315800000001}}
+    bbox = {"type": "geo_bounding_box",
+            "bottom_right": {"lat": 29.642979999999998, "lon": -82.00},
+            "top_left": {"lat": 29.66298, "lon": -82.35315800000001}}
     m = api.create_map(
         rq={"geopoint": bbox}
     )
