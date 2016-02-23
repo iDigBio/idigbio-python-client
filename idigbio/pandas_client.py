@@ -1,7 +1,11 @@
 import logging
 import pandas
 from .json_client import iDbApiJson
-from itertools import chain, imap
+from itertools import chain
+try:
+    from future_builtins import map
+except ImportError:
+    pass
 
 MAX_BATCH_SIZE = 5000
 
@@ -36,7 +40,7 @@ class iDbApiPandas(object):
             if data and len(data["items"]) > 0:
                 records = chain(
                     yd(data),
-                    chain.from_iterable(imap(yd, datagen)))
+                    chain.from_iterable(map(yd, datagen)))
                 return pandas.DataFrame.from_records(records, index="uuid")
         else:
             data = apifn(**kwargs)
