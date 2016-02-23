@@ -89,6 +89,13 @@ class ImagesDisabledException(Exception):
     pass
 
 
+def make_session():
+    import idigbio
+    s = requests.Session()
+    s.headers["User-Agent"] = "idigbio-python-client/" + idigbio.__version__
+    return s
+
+
 class iDigBioMap(object):
     def __init__(self, api, rq={}, style=None, t="auto", disable_images=False):
         self.__api = api
@@ -162,7 +169,7 @@ class iDigBioMap(object):
         if y_tiles is None:
             y_tiles = range(0, 2**zoom)
 
-        s = requests.Session()
+        s = make_session()
         if self._disable_images:
             raise ImagesDisabledException()
         im = Image.new("RGB", (len(x_tiles) * 256, len(y_tiles) * 256))
@@ -200,7 +207,7 @@ class iDbApiJson(object):
         else:
             raise BadEnvException
 
-        self.s = requests.Session()
+        self.s = make_session()
 
     def __del__(self):
         self.s.close()
