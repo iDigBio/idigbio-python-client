@@ -1,5 +1,5 @@
 import os
-
+import re
 from setuptools import setup, find_packages
 
 from codecs import open
@@ -10,11 +10,17 @@ def read(*paths):
     with open(os.path.join(*paths), 'r', 'utf-8') as f:
         return f.read()
 
+readme = read('README.rst')
+history = read('HISTORY.rst')
+
+version = re.search(r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]',
+                    read('idigbio/__init__.py'), re.MULTILINE).group(1)
+
 setup(
     name='idigbio',
-    version='0.4.3',
+    version=version,
     description='Python Client for the iDigBio Search API',
-    long_description=read('README.rst') + "\n\n",
+    long_description=readme + "\n\n" + history,
     url='http://github.com/idigbio/idigbio-python-client/',
     license='MIT',
     author='Alex Thompson',
