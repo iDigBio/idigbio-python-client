@@ -9,7 +9,7 @@ idigbio-python-client
 
 A python client for the idigbio v2 API
 
-.. code-block:: 
+.. code-block::
 
     pip install idigbio
 
@@ -33,7 +33,7 @@ Returning a Pandas Data Frame from the JSON API.
     import idigbio
     api = idigbio.pandas()
     pandas_output = api.search_records()
-    
+
 Examples
 --------
 
@@ -52,7 +52,7 @@ Search for a Record by scientific name
     import idigbio
     api = idigbio.json()
     record_list = api.search_records(rq={"scientificname": "puma concolor"})
-    
+
 Search for Records that have images
 
 .. code-block:: python
@@ -60,7 +60,7 @@ Search for Records that have images
     import idigbio
     api = idigbio.json()
     record_list = api.search_records(rq={"scientificname": "puma concolor", "hasImage": True})
-    
+
 Search for a MediaRecords by record property
 
 .. code-block:: python
@@ -68,7 +68,7 @@ Search for a MediaRecords by record property
     import idigbio
     api = idigbio.json()
     mediarecord_list = api.search_media(rq={"scientificname": "puma concolor", "hasImage": True})
-    
+
 Create a heat map for a genus
 
 .. code-block:: python
@@ -77,14 +77,14 @@ Create a heat map for a genus
     api = idigbio.json()
     m = api.create_map(rq={"genus": "acer"}, t="geohash")
     m.save_map_image("acer_map_geohash", 2)
-    
+
 Create a point map for a genus
 
 .. code-block:: python
 
     import idigbio
     api = idigbio.json()
-    m = api.create_map(rq={"genus": "acer"}, t="points")    
+    m = api.create_map(rq={"genus": "acer"}, t="points")
     m.save_map_image("acer_map_points", 2)
 
 Create a zoomed in point map for a bounding box
@@ -99,7 +99,7 @@ Create a zoomed in point map for a bounding box
     )
     m.save_map_image("test.png", None, bbox=bbox)
 
-    
+
 Create a summary of kingdom and phylum data
 
 .. code-block:: python
@@ -107,7 +107,7 @@ Create a summary of kingdom and phylum data
     import idigbio
     api = idigbio.json()
     summary_data = api.top_records(fields=["kingdom","phylum"])
-    
+
 Get the number of Records for a search by scientific name
 
 .. code-block:: python
@@ -115,7 +115,7 @@ Get the number of Records for a search by scientific name
     import idigbio
     api = idigbio.json()
     count = api.count_records(rq={"scientificname": "puma concolor"})
-    
+
 Get the number of MediaRecords for a search by scientific name
 
 .. code-block:: python
@@ -123,7 +123,7 @@ Get the number of MediaRecords for a search by scientific name
     import idigbio
     api = idigbio.json()
     count = api.count_media(rq={"scientificname": "puma concolor"})
-    
+
 Get the histogram of Collection Dates for a search by record property, for the last 10 years
 
 .. code-block:: python
