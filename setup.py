@@ -4,6 +4,7 @@ from setuptools import setup, find_packages
 
 from codecs import open
 
+
 def read(*paths):
     """Build a file path from *paths* and return the contents."""
     with open(os.path.join(*paths), 'r', 'utf-8') as f:
@@ -14,7 +15,7 @@ setup(
     version='0.4.3',
     description='Python Client for the iDigBio Search API',
     long_description=read('README.rst') + "\n\n",
-    url='http://github.com/idigbio/idigbio-python-client/',   
+    url='http://github.com/idigbio/idigbio-python-client/',
     license='MIT',
     author='Alex Thompson',
     author_email='godfoder@acis.ufl.edu',

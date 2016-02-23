@@ -4,6 +4,7 @@ import sys
 
 from idigbio.json_client import iDbApiJson, ImagesDisabledException
 
+
 class TestIDigBioMap(unittest.TestCase):
     def test___init__(self):
         api = iDbApiJson()
