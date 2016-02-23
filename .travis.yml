@@ -11,3 +11,12 @@ install:
   - "pip install -r requirements.txt"
 # command to run tests
 script: "python -m unittest tests"
+deploy:
+  provider: pypi
+  user: idigbio
+  password:
+    secure: e/ltrIGHu9wZXmi+8XmIaFmyiYz2540UrL129+ezzWRKRTM5FhPguvRO+6epBNGL4+NYZ+BvBiOumC2SCTGzq3ASncCkaCmjAGh8NCPXXblDOkvMGA9qls9sjoJxBCCBhmcY6/QnPOQ59CiSPLIBxru5u2nf4R7peOrzZHJ5o88=
+  on:
+    tags: true
+    distributions: sdist bdist_wheel
+    repo: iDigBio/idigbio-python-client
