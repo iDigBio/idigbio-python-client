@@ -250,7 +250,7 @@ class iDbApiJson(object):
         while retries > 0:
             try:
                 body = json.dumps(kwargs)
-                log.debug("POSTing: %r", self._api_url, slug)
+                log.debug("POSTing: %r\n%s", slug, body)
                 r = self.s.post(self._api_url + slug, data=body)
                 r.raise_for_status()
                 if raw:
@@ -258,7 +258,7 @@ class iDbApiJson(object):
                 else:
                     return r.json()
             except:
-                log.debug(traceback.print_exc())
+                log.exception("Error posting")
                 retries -= 1
         return None
 
