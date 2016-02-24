@@ -319,7 +319,7 @@ class iDbApiJson(object):
         return self._api_post("/v2/summary/top/media", mq=mq, rq=rq,
                               top_fields=top_fields, count=count)
 
-    def count_records(self,rq={}):
+    def count_records(self, rq={}):
         r = self._api_post("/v2/summary/count/records", rq=rq)
         if r is not None:
             return r["itemCount"]
