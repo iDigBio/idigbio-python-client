@@ -214,10 +214,7 @@ class iDbApiJson(object):
 
     def _api_get(self, slug, **kwargs):
         retries = self.retries
-        raw = False
-        if "raw" in kwargs:
-            raw = kwargs["raw"]
-            del kwargs["raw"]
+        raw = kwargs.pop('raw', False)
 
         for arg in list(kwargs):
             if isinstance(kwargs[arg], (dict, list)):
@@ -241,10 +238,7 @@ class iDbApiJson(object):
 
     def _api_post(self, slug, **kwargs):
         retries = self.retries
-        raw = False
-        if "raw" in kwargs:
-            raw = kwargs["raw"]
-            del kwargs["raw"]
+        raw = kwargs.pop('raw', False)
 
         for arg in list(kwargs):
             if kwargs[arg] is None:
