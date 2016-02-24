@@ -3,12 +3,12 @@
 Release History
 ---------------
 
-0.5.0 (???)
+0.4.4 (???)
 +++++++++++
 
 **Changes**
 
-- Include the ``data`` field in the result sets by default
+- Don't exclude ``data.*`` fields if requested specifically
 
 0.4.3 (2016-02-23)
 ++++++++++++++++++

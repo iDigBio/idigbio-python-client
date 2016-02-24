@@ -31,6 +31,9 @@ except:
 log = logging.getLogger(__name__)
 
 
+FIELDS_EXCLUDE_DEFAULT = ['data.*']
+
+
 def level_dic():
     '''
     http://wiki.openstreetmap.org/wiki/Zoom_levels
@@ -266,8 +269,8 @@ class iDbApiJson(object):
         """
         return self._api_get("/v2/view/{0}/{1}".format(t, uuid))
 
-    def search_records(self, rq={}, limit=100, offset=0,
-                       sort=None, fields=None, fields_exclude=None):
+    def search_records(self, rq={}, limit=100, offset=0, sort=None,
+                       fields=None, fields_exclude=FIELDS_EXCLUDE_DEFAULT):
         """
             rq  Search Query in iDigBio Query Format, using Record Query Fields
             sort    field to sort on, pick from Record Query Fields
@@ -278,12 +281,15 @@ class iDbApiJson(object):
 
             Returns idigbio record format (legacy api), plus additional top level keys with parsed index terms. Returns None on error.
         """
+        if fields is not None and fields_exclude is FIELDS_EXCLUDE_DEFAULT:
+            fields_exclude = None
+
         return self._api_post("/v2/search/records",
                               rq=rq, limit=limit, offset=offset, sort=sort,
                               fields=fields, fields_exclude=fields_exclude)
 
-    def search_media(self, mq={}, rq={}, limit=100, offset=0,
-                     sort=None, fields=None, fields_exclude=["data.*"]):
+    def search_media(self, mq={}, rq={}, limit=100, offset=0, sort=None,
+                     fields=None, fields_exclude=FIELDS_EXCLUDE_DEFAULT):
         """
             mq  Search Query in iDigBio Query Format, using Media Query Fields
             rq  Search Query in iDigBio Query Format, using Record Query Fields
@@ -295,6 +301,8 @@ class iDbApiJson(object):
 
             Returns idigbio record format (legacy api), plus additional top level keys with parsed index terms. Returns None on error.
         """
+        if fields is not None and fields_exclude is FIELDS_EXCLUDE_DEFAULT:
+            fields_exclude = None
         return self._api_post("/v2/search/records",
                               rq=rq, limit=limit, offset=offset, sort=sort,
                               fields=fields, fields_exclude=fields_exclude)
