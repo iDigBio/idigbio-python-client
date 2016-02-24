@@ -124,22 +124,25 @@ class TestIDbApiJson(unittest.TestCase):
 
     def test_datehist(self):
         api = iDbApiJson()
-        r = api.datehist()
+        r = api.datehist(
+            rq={"scientificname": "puma concolor"},
+            top_fields=["institutioncode"],
+            min_date="2005-01-01")
         self.assertIsNotNone(r)
 
     def test_stats_api(self):
         api = iDbApiJson()
-        r = api.stats("api")
+        r = api.stats("api", min_date="2005-01-01")
         self.assertIsNotNone(r)
 
     def test_stats_digest(self):
         api = iDbApiJson()
-        r = api.stats("digest")
+        r = api.stats("digest", min_date="2005-01-01")
         self.assertIsNotNone(r)
 
     def test_stats_search(self):
         api = iDbApiJson()
-        r = api.stats("search")
+        r = api.stats("search", min_date="2005-01-01")
         self.assertIsNotNone(r)
 
     def test_top_media(self):

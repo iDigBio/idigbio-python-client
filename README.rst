@@ -106,7 +106,7 @@ Create a summary of kingdom and phylum data
 
     import idigbio
     api = idigbio.json()
-    summary_data = api.top_records(fields=["kingdom","phylum"])
+    summary_data = api.top_records(fields=["kingdom", "phylum"])
 
 Get the number of Records for a search by scientific name
 
@@ -130,4 +130,6 @@ Get the histogram of Collection Dates for a search by record property, for the l
 
     import idigbio
     api = idigbio.json()
-    histogram_data = api.datehist(rq={"scientificname": "puma concolor"},fields=["institutioncode"],minDate="2005-01-01")
+    histogram_data = api.datehist(
+        rq={"scientificname": "puma concolor"},
+        top_fields=["institutioncode"], min_date="2005-01-01")

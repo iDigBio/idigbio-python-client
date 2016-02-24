@@ -333,19 +333,19 @@ class iDbApiJson(object):
         else:
             return None
 
-    def datehist(self, rq={}, top_fields=None, count=None, dateField=None,
-                 minDate=None, maxDate=None, dateInterval=None):
+    def datehist(self, rq={}, top_fields=None, count=None, date_field=None,
+                 min_date=None, max_date=None, date_interval=None):
         return self._api_post(
             "/v2/summary/datehist",
-            rq={}, top_fields=None, count=None, dateField=None,
-            minDate=None, maxDate=None, dateInterval=None)
+            rq=rq, top_fields=top_fields, count=count, date_field=date_field,
+            min_date=min_date, max_date=max_date, date_interval=date_interval)
 
-    def stats(self, t, recordset=None, dateField=None,
-              minDate=None, maxDate=None, dateInterval=None):
+    def stats(self, t, recordset=None, min_date=None, max_date=None,
+              date_interval=None):
         return self._api_post("/v2/summary/stats/{0}".format(t),
-                              rq={}, top_fields=None, count=None,
-                              dateField=None,
-                              minDate=None, maxDate=None, dateInterval=None)
+                              recordset=recordset,
+                              min_date=min_date, max_date=max_date,
+                              date_interval=date_interval)
 
 
 if __name__ == '__main__':

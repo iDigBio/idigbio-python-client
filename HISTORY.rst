@@ -3,12 +3,15 @@
 Release History
 ---------------
 
-0.4.4 (???)
+0.5.0 (???)
 +++++++++++
 
 **Changes**
 
 - Don't exclude ``data.*`` fields if requested specifically
+- Fix ``stats`` and ``datehist`` api calls to respect parameters;
+  param names changed to use python style and match server params.
+
 
 0.4.3 (2016-02-23)
 ++++++++++++++++++
