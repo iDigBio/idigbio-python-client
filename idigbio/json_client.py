@@ -267,7 +267,7 @@ class iDbApiJson(object):
         return self._api_get("/v2/view/{0}/{1}".format(t, uuid))
 
     def search_records(self, rq={}, limit=100, offset=0,
-                       sort=None, fields=None, fields_exclude=["data.*"]):
+                       sort=None, fields=None, fields_exclude=None):
         """
             rq  Search Query in iDigBio Query Format, using Record Query Fields
             sort    field to sort on, pick from Record Query Fields
