@@ -3,6 +3,20 @@
 Release History
 ---------------
 
+0.5.1 (TBD)
++++++++++++
+
+**Changes**
+
+- Make pandas an extra requirements, update docs
+
+
+**New**
+
+- Specify auth for api backend
+
+
+
 0.5.0 (2016-02-24)
 ++++++++++++++++++
 

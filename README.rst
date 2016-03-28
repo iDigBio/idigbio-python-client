@@ -7,16 +7,24 @@ idigbio-python-client
 .. image:: https://img.shields.io/travis/iDigBio/idigbio-python-client.svg
         :target: https://travis-ci.org/iDigBio/idigbio-python-client
 
-A python client for the idigbio v2 API
+A python client for the `iDigBio <https://www.idigbio.org/>`_ iDigBio v2 API.
+
+Installation
+------------
 
 .. code-block::
 
     pip install idigbio
 
-For documentation of the endpoint parameters go to: https://github.com/idigbio/idigbio-search-api/wiki
+If you want to use the Pandas Data Frame interface you need to install
+pandas as well.
 
-Two Forms
----------
+.. code-block::
+
+    pip install idigbio pandas
+
+Basic Usage
+-----------
 
 Returning JSON from the API.
 
@@ -26,7 +34,7 @@ Returning JSON from the API.
     api = idigbio.json()
     json_output = api.search_records()
 
-Returning a Pandas Data Frame from the JSON API.
+Returning a Pandas Data Frame.
 
 .. code-block:: python
 
@@ -34,8 +42,13 @@ Returning a Pandas Data Frame from the JSON API.
     api = idigbio.pandas()
     pandas_output = api.search_records()
 
+See the `Search API docs
+<https://github.com/idigbio/idigbio-search-api/wiki>`_ for info about
+the endpoint parameters.
+
+
 Examples
---------
+++++++++
 
 View a Record By UUID
 

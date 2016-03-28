@@ -26,7 +26,10 @@ setup(
     author='Alex Thompson',
     author_email='godfoder@acis.ufl.edu',
     packages=find_packages(exclude=['tests*']),
-    install_requires=['pandas', 'requests'],
+    install_requires=['requests'],
+    extras_require={
+        "pandas": ["pandas"]
+    },
     include_package_data=True,
     classifiers=[
         'Development Status :: 5 - Production/Stable',
