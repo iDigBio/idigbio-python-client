@@ -76,3 +76,4 @@ target/
 .pythoscope/
 
 /.dir-locals.el
+/README.html

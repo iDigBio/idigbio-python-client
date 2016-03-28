@@ -5,10 +5,11 @@ python:
 - '3.4'
 - '3.5'
 install:
-- pip install pillow
+- pip install -r test-requirements.txt
 - pip install .
-- pip install -r requirements.txt
-script: python -m unittest tests
+script:
+- python -m unittest tests
+- cat README.rst HISTORY.rst | rst2html.py --strict - /dev/null
 deploy:
   provider: pypi
   user: idigbio

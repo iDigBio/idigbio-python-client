@@ -1,0 +1,5 @@
+pandas
+requests
+pillow
+docutils
+pygments
