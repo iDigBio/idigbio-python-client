@@ -349,6 +349,23 @@ class iDbApiJson(object):
                               min_date=min_date, max_date=max_date,
                               date_interval=date_interval)
 
+    def upload(self, filereference, localfile):
+        if not self.s.auth:
+            raise Exception("Unauthorized")
+        if not localfile:
+            raise ValueError("Must have local copy of file to upload")
+        files = {'file': open(localfile, 'rb')}
+        p = {'filereference': filereference}
+        return self._api_post("/v2/media", files=files, params=p)
+
+    def addreference(self, filereference, localfile):
+        if not self.s.auth:
+            raise Exception("Unauthorized")
+        if not localfile:
+            raise ValueError("Must have local copy of file to upload")
+        etag = util.calcFileHash(localfile)
+        return self._api_post("/v2/me")
+
 
 if __name__ == '__main__':
     api = iDbApiJson()
