@@ -75,3 +75,4 @@ target/
 # Pythoscope
 .pythoscope/
 
+/.dir-locals.el
