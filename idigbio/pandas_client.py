@@ -13,11 +13,11 @@ log = logging.getLogger(__name__)
 
 
 class iDbApiPandas(object):
-    def __init__(self, env="prod"):
+    def __init__(self, env="prod", user=None, password=None):
         """
             env: Which environment to use. Defaults to prod."
         """
-        self.__api = iDbApiJson(env=env)
+        self.__api = iDbApiJson(env=env, user=user, password=password)
 
     def __search_base(self, apifn, **kwargs):
         def yd(data):

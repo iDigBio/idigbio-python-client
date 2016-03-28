@@ -76,5 +76,11 @@ class TestIDbApiPandas(unittest.TestCase):
         df = api.search_media()
         self.assertIsInstance(df,pandas.DataFrame)
 
+    def test_auth_on_session(self):
+        p = iDbApiPandas(user="foo", password="bar")
+        japi = getattr(p, '_iDbApiPandas__api')
+        self.assertIsNotNone(japi.s)
+        self.assertEqual(japi.s.auth, ("foo", "bar"))
+
 if __name__ == '__main__':
     unittest.main()

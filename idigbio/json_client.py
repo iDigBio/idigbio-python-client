@@ -92,9 +92,11 @@ class ImagesDisabledException(Exception):
     pass
 
 
-def make_session():
+def make_session(user=None, password=None):
     import idigbio
     s = requests.Session()
+    if user and password:
+        s.auth = (user, password)
     s.headers["User-Agent"] = "idigbio-python-client/" + idigbio.__version__
     return s
 
@@ -197,7 +199,7 @@ class iDigBioMap(object):
 class iDbApiJson(object):
     """ iDigBio Search API Json Client """
 
-    def __init__(self, env="prod", retries=3):
+    def __init__(self, env="prod", retries=3, user=None, password=None):
         """
             env: Which environment to use. Defaults to prod."
         """
@@ -210,7 +212,7 @@ class iDbApiJson(object):
         else:
             raise BadEnvException
 
-        self.s = make_session()
+        self.s = make_session(user=user, password=password)
 
     def __del__(self):
         self.s.close()
