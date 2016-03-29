@@ -366,7 +366,9 @@ class iDbApiJson(object):
         if not localfile:
             raise ValueError("Must have local copy of file to upload")
         etag = util.calcFileHash(localfile)
-        return self._api_post("/v2/me")
+        p = {'filereference': filereference,
+             'etag': etag}
+        return self._api_post("/v2/media", params=p)
 
 
 if __name__ == '__main__':
