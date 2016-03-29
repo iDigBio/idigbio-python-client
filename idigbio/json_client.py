@@ -208,11 +208,23 @@ class iDbApiJson(object):
         self.retries = retries
 
         if env == "prod":
-            self._api_url = "http://search.idigbio.org"
+            self._api_urls = {
+                "base": "http://search.idigbio.org",
+                "/v2/media": "http://api.idigbio.org",
+                "/v2/download": "http://api.idigbio.org"
+            }
         elif env == "beta":
-            self._api_url = "http://beta-search.idigbio.org"
+            self._api_urls = {
+                "base": "http://beta-search.idigbio.org",
+                "/v2/media": "http://beta-api.idigbio.org",
+                "/v2/download": "http://beta-api.idigbio.org"
+            }
         elif env == "dev":
-            self._api_url = "http://localhost:19197"
+            self._api_urls = {
+                "base": "http://localhost:19196",
+                "/v2/media": "http://localhost:19197",
+                "/v2/download": "http://localhost:19197"
+            }
         else:
             raise BadEnvException
 
@@ -225,6 +237,8 @@ class iDbApiJson(object):
         retries = self.retries
         raw = kwargs.pop('raw', False)
 
+        api_url = self._api_urls.get(slug, self._api_urls.get("base"))
+
         for arg in list(kwargs):
             if isinstance(kwargs[arg], (dict, list)):
                 kwargs[arg] = json.dumps(kwargs[arg])
@@ -233,8 +247,8 @@ class iDbApiJson(object):
         qs = urlencode(kwargs)
         while retries > 0:
             try:
-                log.debug("Querying: %r", self._api_url + slug + "?" + qs)
-                r = self.s.get(self._api_url + slug + "?" + qs)
+                log.debug("Querying: %r", api_url + slug + "?" + qs)
+                r = self.s.get(api_url + slug + "?" + qs)
                 r.raise_for_status()
                 if raw:
                     return r.content
@@ -251,6 +265,8 @@ class iDbApiJson(object):
         files = kwargs.pop('files', None)
         params = kwargs.pop('params', None)
 
+        api_url = self._api_urls.get(slug, self._api_urls.get("base"))
+
         for arg in list(kwargs):
             if kwargs[arg] is None:
                 del kwargs[arg]
@@ -260,14 +276,15 @@ class iDbApiJson(object):
                 body = json.dumps(kwargs)
                 if files is None:
                     log.debug("POSTing: %r\n%s", slug, body)
-                    r = self.s.post(self._api_url + slug, data=body)
+                    r = self.s.post(api_url + slug, data=body)
                 else:
                     log.debug("POSTing + Files: %r\n%s", slug, body)
                     r = self.s.post(
-                        self._api_url + slug,
+                        api_url + slug,
                         data=kwargs,
                         files=files,
-                        params=params
+                        params=params,
+                        headers={"Content-Type": "multipart/form-data"}
                     )
 
                 r.raise_for_status()
