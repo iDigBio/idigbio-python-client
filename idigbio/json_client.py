@@ -278,13 +278,16 @@ class iDbApiJson(object):
                     log.debug("POSTing: %r\n%s", slug, body)
                     r = self.s.post(api_url + slug, data=body)
                 else:
+                    # you must seek the file before sending,
+                    # especially on the retry loop
+                    for k in files:
+                        files[k].seek(0)
                     log.debug("POSTing + Files: %r\n%s", slug, body)
                     r = self.s.post(
                         api_url + slug,
                         data=kwargs,
                         files=files,
-                        params=params,
-                        headers={"Content-Type": "multipart/form-data"}
+                        params=params
                     )
 
                 r.raise_for_status()
