@@ -4,6 +4,8 @@ import requests
 import json
 import traceback
 
+from idigbio import util
+
 try:
     # Python 2
     from urllib import urlencode
