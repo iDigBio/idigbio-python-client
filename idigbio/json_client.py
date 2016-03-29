@@ -209,6 +209,8 @@ class iDbApiJson(object):
             self._api_url = "http://search.idigbio.org"
         elif env == "beta":
             self._api_url = "http://beta-search.idigbio.org"
+        elif env == "dev":
+            self._api_url = "http://localhost:19197"
         else:
             raise BadEnvException
 
@@ -244,6 +246,7 @@ class iDbApiJson(object):
     def _api_post(self, slug, **kwargs):
         retries = self.retries
         raw = kwargs.pop('raw', False)
+        files = kwargs.pop('files', None)
 
         for arg in list(kwargs):
             if kwargs[arg] is None:
@@ -252,8 +255,13 @@ class iDbApiJson(object):
         while retries > 0:
             try:
                 body = json.dumps(kwargs)
-                log.debug("POSTing: %r\n%s", slug, body)
-                r = self.s.post(self._api_url + slug, data=body)
+                if files is None:
+                    log.debug("POSTing: %r\n%s", slug, body)
+                    r = self.s.post(self._api_url + slug, data=body)
+                else:
+                    log.debug("POSTing + Files: %r\n%s", slug, body)
+                    r = self.s.post(self._api_url + slug, data=kwargs, files=files)
+
                 r.raise_for_status()
                 if raw:
                     return r.content
@@ -356,7 +364,7 @@ class iDbApiJson(object):
             raise ValueError("Must have local copy of file to upload")
         files = {'file': open(localfile, 'rb')}
         p = {'filereference': filereference}
-        return self._api_post("/v2/media", files=files, params=p)
+        return self._api_post("/v2/media", files=files, **p)
 
     def addreference(self, filereference, localfile):
         if not self.s.auth:
