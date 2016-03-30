@@ -3,17 +3,17 @@
 Release History
 ---------------
 
-0.5.1 (TBD)
-+++++++++++
+0.6.0 (2016-03-30)
+++++++++++++++++++
 
 **Changes**
 
 - Make pandas an extra requirements, update docs
 
-
 **New**
 
 - Specify auth for api backend
+- Upload image capability (requires auth)
 
 
 
