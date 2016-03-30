@@ -209,19 +209,19 @@ class iDbApiJson(object):
 
         if env == "prod":
             self._api_urls = {
-                "base": "http://search.idigbio.org",
-                "/v2/media": "http://api.idigbio.org",
-                "/v2/download": "http://api.idigbio.org"
+                "base": "https://search.idigbio.org",
+                "/v2/media": "https://api.idigbio.org",
+                "/v2/download": "https://api.idigbio.org"
             }
         elif env == "beta":
             self._api_urls = {
-                "base": "http://beta-search.idigbio.org",
-                "/v2/media": "http://beta-api.idigbio.org",
-                "/v2/download": "http://beta-api.idigbio.org"
+                "base": "https://beta-search.idigbio.org",
+                "/v2/media": "https://beta-api.idigbio.org",
+                "/v2/download": "https://beta-api.idigbio.org"
             }
         elif env == "dev":
             self._api_urls = {
-                "base": "http://localhost:19196",
+                "base": "https://localhost:19196",
                 "/v2/media": "http://localhost:19197",
                 "/v2/download": "http://localhost:19197"
             }
