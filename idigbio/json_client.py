@@ -226,7 +226,7 @@ class iDbApiJson(object):
                 "/v2/download": "http://localhost:19197"
             }
         else:
-            raise BadEnvException
+            raise BadEnvException()
 
         self.s = make_session(user=user, password=password)
 
