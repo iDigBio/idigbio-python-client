@@ -1,0 +1,63 @@
+package:
+  name: idigbio
+  version: "0.6.0"
+
+source:
+  fn: idigbio-0.6.0.tar.gz
+  url: https://pypi.python.org/packages/source/i/idigbio/idigbio-0.6.0.tar.gz
+  md5: f08ed1ce3d8db4f2e383acc12c286ec2
+#  patches:
+   # List any patch files here
+   # - fix.patch
+
+# build:
+  # noarch_python: True
+  # preserve_egg_dir: True
+  # entry_points:
+    # Put any entry points (scripts to be generated automatically) here. The
+    # syntax is module:function.  For example
+    #
+    # - idigbio = idigbio:main
+    #
+    # Would create an entry point called idigbio that calls idigbio.main()
+
+
+  # If this is a new build for the same version, increment the build
+  # number. If you do not include this key, it defaults to 0.
+  # number: 1
+
+requirements:
+  build:
+    - python
+    - setuptools
+    - requests
+
+  run:
+    - python
+    - requests
+
+test:
+  # Python imports
+  imports:
+    - idigbio
+
+  # commands:
+    # You can put test commands to be run here.  Use this to test that the
+    # entry points work.
+
+
+  # You can also put a file called run_test.py in the recipe that will be run
+  # at test time.
+
+  # requires:
+    # Put any additional test requirements here.  For example
+    # - nose
+
+about:
+  home: http://github.com/idigbio/idigbio-python-client/
+  license: MIT License
+  summary: 'Python Client for the iDigBio Search API'
+
+# See
+# http://docs.continuum.io/conda/build.html for
+# more information about meta.yaml
