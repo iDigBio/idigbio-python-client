@@ -3,6 +3,13 @@
 Release History
 ---------------
 
+0.6.1 (2016-04-08)
+++++++++++++++++++
+
+** Changes **
+
+- Add media_type to upload functionality.
+
 0.6.0 (2016-03-30)
 ++++++++++++++++++
 

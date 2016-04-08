@@ -1,6 +1,6 @@
 package:
   name: idigbio
-  version: "0.6.0"
+  version: "0.6.1"
 
 source:
   fn: idigbio-0.6.0.tar.gz
