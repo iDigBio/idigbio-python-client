@@ -278,8 +278,9 @@ class iDbApiJson(object):
                     log.debug("POSTing: %r\n%s", slug, body)
                     r = self.s.post(
                         api_url + slug,
-                        data=kwargs,
-                        params=params
+                        data=json.dumps(kwargs),
+                        params=params,
+                        headers={"Content-Type": "application/json"}
                     )
                 else:
                     # you must seek the file before sending,
