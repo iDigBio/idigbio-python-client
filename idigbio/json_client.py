@@ -276,7 +276,11 @@ class iDbApiJson(object):
                 body = json.dumps(kwargs)
                 if files is None:
                     log.debug("POSTing: %r\n%s", slug, body)
-                    r = self.s.post(api_url + slug, data=body)
+                    r = self.s.post(
+                        api_url + slug,
+                        data=kwargs,
+                        params=params
+                    )
                 else:
                     # you must seek the file before sending,
                     # especially on the retry loop
@@ -296,7 +300,7 @@ class iDbApiJson(object):
                 else:
                     return r.json()
             except:
-                log.exception("Error posting")
+                log.exception("Error posting: %s", r.content)
                 retries -= 1
         return None
 
@@ -407,6 +411,15 @@ class iDbApiJson(object):
              'etag': etag}
         return self._api_post("/v2/media", params=p)
 
+    def addurl(self, filereference, media_type=None, mime_type=None):
+        if not self.s.auth:
+            raise Exception("Unauthorized")
+        p = {
+            "filereference": filereference,
+            "media_type": media_type,
+            "mime": mime_type
+        }
+        return self._api_post("/v2/media", **p)
 
 if __name__ == '__main__':
     api = iDbApiJson()
