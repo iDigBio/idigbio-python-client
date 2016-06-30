@@ -301,7 +301,7 @@ class iDbApiJson(object):
                 else:
                     return r.json()
             except:
-                log.exception("Error posting: %s", r.content)
+                log.exception("Error posting: %r %r", slug, params)
                 retries -= 1
         return None
 
