@@ -346,8 +346,9 @@ class iDbApiJson(object):
         """
         if fields is not None and fields_exclude is FIELDS_EXCLUDE_DEFAULT:
             fields_exclude = None
-        return self._api_post("/v2/search/records",
-                              rq=rq, limit=limit, offset=offset, sort=sort,
+
+        return self._api_post("/v2/search/media",
+                              rq=rq, mq=mq, limit=limit, offset=offset, sort=sort,
                               fields=fields, fields_exclude=fields_exclude)
 
     def create_map(self, rq={}, style=None, t="auto", disable_images=False):

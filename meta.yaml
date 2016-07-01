@@ -1,11 +1,11 @@
 package:
   name: idigbio
-  version: "0.7.2"
+  version: "0.8.0"
 
 source:
-  fn: idigbio-0.7.1.tar.gz
-  url: https://pypi.python.org/packages/99/eb/b65214ac0dc7a84699ca7f5b8157618004a4dd49ebdeec396f43ecd7d177/idigbio-0.7.2.linux-x86_64.tar.gz
-  md5: 8261baaa1bbed5ad37655c99637f9885
+  fn: idigbio-0.8.0.tar.gz
+  url: https://pypi.python.org/packages/9f/7d/6ac4b12774152242b70639e6476d6634341254ae9fbd57a1c5ffd9fe4a64/idigbio-0.8.0.linux-x86_64.tar.gz
+  md5: 02f72417ceb48240acbf6c1ee34f3487
 #  patches:
    # List any patch files here
    # - fix.patch
