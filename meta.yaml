@@ -4,8 +4,8 @@ package:
 
 source:
   fn: idigbio-0.8.0.tar.gz
-  url: https://pypi.python.org/packages/9f/7d/6ac4b12774152242b70639e6476d6634341254ae9fbd57a1c5ffd9fe4a64/idigbio-0.8.0.linux-x86_64.tar.gz
-  md5: 02f72417ceb48240acbf6c1ee34f3487
+  url: https://pypi.python.org/packages/b1/35/763081178444144eb484f34a57db71673978df90e185dca2bbd2195c6bba/idigbio-0.8.0.tar.gz
+  md5: 54431a3cf4f8260532f0c959db203a25
 #  patches:
    # List any patch files here
    # - fix.patch
