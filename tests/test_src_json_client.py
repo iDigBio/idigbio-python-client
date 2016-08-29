@@ -4,6 +4,19 @@ import sys
 
 from idigbio.json_client import iDbApiJson, ImagesDisabledException
 
+try:
+    import mock as mock_module
+except ImportError:
+    try:
+        import unittest.mock as mock_module
+    except ImportError:
+        mock_module = None
+
+if mock_module:
+    Mock = mock_module.Mock
+    MagicMock = mock_module.MagicMock
+    patch = mock_module.patch
+
 
 class TestIDigBioMap(unittest.TestCase):
     def test___init__(self):
@@ -154,6 +167,19 @@ class TestIDbApiJson(unittest.TestCase):
         api = iDbApiJson()
         r = api.top_records()
         self.assertIsNotNone(r)
+
+    def test_upload(self):
+        if not MagicMock:
+            self.skipTest('mock library not installed')
+        api = iDbApiJson(user="foo", password="bar")
+        api._api_post = Mock()
+        api.upload('testreference', __file__)
+        args, kwargs = api._api_post.call_args
+        self.assertIn("/v2/media", args)
+        self.assertIn('files', kwargs)
+        self.assertIn('params', kwargs)
+        self.assertIn('etag', kwargs['params'])
+        self.assertIsNotNone(kwargs['params']['etag'])
 
 if __name__ == '__main__':
     unittest.main()

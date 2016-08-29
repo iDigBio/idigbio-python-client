@@ -21,7 +21,7 @@ from __future__ import absolute_import
 
 import logging
 
-__version__ = '0.8.0'
+__version__ = '0.8.1'
 
 
 def json(*args, **kwargs):

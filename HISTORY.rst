@@ -3,6 +3,11 @@
 Release History
 ---------------
 
+0.8.1 (2016-08-29)
+++++++++++++++++++
+
+- Send etag with file on upload to verify correctness
+
 0.6.1 (2016-04-08)
 ++++++++++++++++++
 
