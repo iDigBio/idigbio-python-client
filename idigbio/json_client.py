@@ -399,6 +399,7 @@ class iDbApiJson(object):
         fd = open(localfile, 'rb')
         if etag is None:
             etag = util.calcFileHash(fd, op=False)
+            log.debug("Calculate etag for %r as %s", localfile, etag)
         files = {'file': fd}
         p = {
             "filereference": filereference,
