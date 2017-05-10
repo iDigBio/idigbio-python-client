@@ -377,6 +377,13 @@ class iDbApiJson(object):
         else:
             return None
 
+    def count_recordsets(self, rsq={"data.ingest":True}):
+        r = self._api_post("/v2/summary/count/recordsets", rsq=rsq)
+        if r is not None:
+            return r["itemCount"]
+        else:
+            return None
+
     def datehist(self, rq={}, top_fields=None, count=None, date_field=None,
                  min_date=None, max_date=None, date_interval=None):
         return self._api_post(

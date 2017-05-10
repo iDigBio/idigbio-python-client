@@ -100,6 +100,10 @@ class iDbApiPandas(object):
     def count_media(self, **kwargs):
         return self.__api.count_media(**kwargs)
 
+    def count_recordsets(self, **kwargs):
+        return self.__api.count_recordsets(**kwargs)
+
+
     # TODO
     # def datehist(self,**kwargs):
     #     return self._api.datehist(**kwargs)

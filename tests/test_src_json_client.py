@@ -135,6 +135,13 @@ class TestIDbApiJson(unittest.TestCase):
         self.assertIsInstance(r,int)
         self.assertEqual(r,0)
 
+    def test_count_recordsets(self):
+        api = iDbApiJson()
+        r = api.count_recordsets()
+        self.assertIsNotNone(r)
+        self.assertIsInstance(r,int)
+        self.assertNotEqual(r,0)
+
     def test_datehist(self):
         api = iDbApiJson()
         r = api.datehist(

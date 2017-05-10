@@ -53,6 +53,14 @@ class TestIDbApiPandas(unittest.TestCase):
         df = api.count_records()
         self.assertIsInstance(df,int)
 
+    def test_count_recordsets(self):
+        api = iDbApiPandas()
+        r = api.count_recordsets()
+        self.assertIsNotNone(r)
+        self.assertIsInstance(r,int)
+        self.assertNotEqual(r,0)
+
+
     # TODO
     # def test_datehist(self):
     #     # i_db_api_pandas = iDbApiPandas(env, debug)
