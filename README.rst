@@ -150,7 +150,9 @@ Get the histogram of Collection Dates for a search by record property, for the l
 Development
 +++++++++++
 
-To contribute code to this repo, please submit a pull request.
+To contribute code to this project, please submit a pull request to the repo on github:
+
+https://github.com/idigbio/idigbio-python-client/
 
 To set up a development environment, run the following from inside a python virtual environment
 in your local repo directory:
