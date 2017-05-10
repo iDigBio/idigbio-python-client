@@ -146,3 +146,16 @@ Get the histogram of Collection Dates for a search by record property, for the l
     histogram_data = api.datehist(
         rq={"scientificname": "puma concolor"},
         top_fields=["institutioncode"], min_date="2005-01-01")
+
+Development
+++++++++
+
+To contribute code to this repo, please submit a pull request.
+
+To set up a development environment, run the following from inside a python virtual environment
+in your local repo directory:
+
+.. code-block::
+
+    pip install -e .
+
