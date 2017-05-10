@@ -169,7 +169,7 @@ class TestIDbApiJson(unittest.TestCase):
         self.assertIsNotNone(r)
 
     def test_upload(self):
-        if not MagicMock:
+        if mock_module is None:
             self.skipTest('mock library not installed')
         api = iDbApiJson(user="foo", password="bar")
         api._api_post = Mock()
