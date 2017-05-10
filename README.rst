@@ -148,7 +148,7 @@ Get the histogram of Collection Dates for a search by record property, for the l
         top_fields=["institutioncode"], min_date="2005-01-01")
 
 Development
-++++++++
++++++++++++
 
 To contribute code to this repo, please submit a pull request.
 
