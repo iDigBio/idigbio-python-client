@@ -3,6 +3,14 @@
 Release History
 ---------------
 
+0.8.2 (2017-05-10)
+++++++++++++++++++
+
+**New**
+
+- count_recordsets() function returns number of recordsets in iDigBio
+
+
 0.8.1 (2016-08-29)
 ++++++++++++++++++
 
@@ -11,7 +19,7 @@ Release History
 0.6.1 (2016-04-08)
 ++++++++++++++++++
 
-** Changes **
+**Changes**
 
 - Add media_type to upload functionality.
 
