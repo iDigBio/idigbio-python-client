@@ -434,13 +434,3 @@ class iDbApiJson(object):
             "mime": mime_type
         }
         return self._api_post("/v2/media", **p)
-
-if __name__ == '__main__':
-    api = iDbApiJson()
-    bbox = {"type": "geo_bounding_box",
-            "bottom_right": {"lat": 29.642979999999998, "lon": -82.00},
-            "top_left": {"lat": 29.66298, "lon": -82.35315800000001}}
-    m = api.create_map(
-        rq={"geopoint": bbox}
-    )
-    m.save_map_image("test.png", None, bbox=bbox)
