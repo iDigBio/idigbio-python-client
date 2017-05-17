@@ -26,11 +26,11 @@ query = {"scientificname": "elephantopus elatus", "hasImage": True}
 size = 'webview'
 
 
-# Edit the 'output_dir' variable to specific a full file path / directory for the 
+# Edit the 'output_directory' variable to specific a full file path or directory for the 
 # downloads. Leaving as-is will download to temporary directory under the current dir.
 
-#output_directory = None
-output_directory = '/tmp/monkeybusiness'
+output_directory = None
+#output_directory = '/path/to/place/for/media'
 
 MAX_RESULTS = 1000
 
