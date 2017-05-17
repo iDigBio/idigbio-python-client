@@ -6,9 +6,8 @@ try:
     import os
     import time
 except ImportError as e:
-    print ("IMPORT ERROR / missing module: {0}".format(e))
+    print ("IMPORT ERROR (This exception is likely caused by a missing module): '{0}'".format(e))
     raise SystemExit
-
 
 
 ################
