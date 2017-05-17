@@ -3,6 +3,17 @@
 Release History
 ---------------
 
+0.8.3 (2017-05-17)
+++++++++++++++++++
+
+**New**
+
+- add an example to examples directory to download media based on search query
+
+**Changes**
+
+- minor changes to documentation, unit tests
+
 0.8.2 (2017-05-10)
 ++++++++++++++++++
 
