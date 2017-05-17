@@ -3,7 +3,7 @@
 Release History
 ---------------
 
-0.8.3 (2017-05-17)
+0.8.3.1 (2017-05-17)
 ++++++++++++++++++
 
 **New**
@@ -13,6 +13,7 @@ Release History
 **Changes**
 
 - minor changes to documentation, unit tests
+- remove hard-coded path to tmp directory
 
 0.8.2 (2017-05-10)
 ++++++++++++++++++
