@@ -18,7 +18,7 @@ except ImportError as e:
 # See iDigBio Query Format for help on query syntax
 #    https://github.com/idigbio/idigbio-search-api/wiki/Query-Format
 
-query = {"scientificname": "elephantopus elatus", "hasImage": True}
+query = {"scientificname": "elephantopus elatus"}
 
 # Edit the 'size' variable to change which variant of the media derivative to download.
 # Valid sizes are 'thumbnail', 'webview', and 'fullsize'
