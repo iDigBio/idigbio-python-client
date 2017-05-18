@@ -6,56 +6,113 @@ try:
     import os
     import time
     import argparse
+    import json
 except ImportError as e:
     print ("IMPORT ERROR (This exception is likely caused by a missing module): '{0}'".format(e))
     raise SystemExit
 
-
-
 help_blob = """
-    Descriptive text goes here.
 
-    Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam
-    nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat
-    volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation
-    ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.
+    This script will download media that are associated with the specimens
+    returned by an iDigBio search query.
+
+    The iDigBio Query Format is documented at
+
+      https://github.com/idigbio/idigbio-search-api/wiki/Query-Format
 
     Notes on the --output-dir / -o parameter:
 
         If the specified output directory does not exist, it will be created.
         Omitting this parameter will cause a new directory to be created
-        under the current directory, named with a timestamp-like style.
+        under the current directory, named in a timestamp-like style.
+
+
+    Example, download media for scientific name Elephantopos elatus:
+
+        $ python fetch_media.py  \\
+            -q '{"scientificname": "elephantopus elatus"}'
+
+    The defaults of this script will create a subdirectory under the current
+    directory with the images inside named in a timestamp-like style.
+
+### need an example here:
+    $ ls -latr 201705171XXXXXX | head -n3
 
 """
 
-DEFAULT_SIZE = 'webview'
-DEFAULT_MAX = 100
+SIZES = ["thumbnail", "webview", "fullsize"]
+DEFAULT_SIZE = "webview"
+DEFAULT_MAX_COUNT = 100
+MAX_MAX_COUNT = 5000
 DEFAULT_OUTPUT_DIR = None
+#RECORD_TYPES = ["record", "mediarecord"]
+#DEFAULT_UUID_FILENAME_TYPE = "mediarecord"
 
 argparser = argparse.ArgumentParser(description=help_blob, formatter_class=argparse.RawDescriptionHelpFormatter)
-argparser.add_argument("-m", "--max", help="Maximum number of records to be returned from search query.\nDefault: {0}".format(DEFAULT_MAX))
-argparser.add_argument("-s", "--size", help="Size of derivative to download. Valid values are 'thumbnail', 'webview', and 'fullsize'.\nDefault: '{0}'".format(DEFAULT_SIZE))
-argparser.add_argument("-o", "--output-dir", help="Directory path for downloaded media files. Default: a new directory will be created under current directory")
-#argparser.add_argument("-b", "--bucket", required=True, help="Name of s3 bucket. Example: idigbio-images-prod")
-#argparser.add_argument("-t", "--type", required=True, help="Type of media object, used to construct bucket names. Example: images")
-
-arg_group_outfname = argparser.add_mutually_exclusive_group(required=False)
-arg_group_outfname.add_argument("-g", help="Output filename based on record uuid.")  # should be default
-arg_group_outfname.add_argument("-j", help="Output filename based on mediarecord uuid.")
-
-
+argparser.add_argument("-m", "--max", type=int, default=DEFAULT_MAX_COUNT,
+                       help="Maximum number of records to be returned from search query. Default: {0}".format(DEFAULT_MAX_COUNT))
+argparser.add_argument("-s", "--size", choices=SIZES, default=DEFAULT_SIZE, 
+                       help="Size of derivative to download. Default: '{0}'".format(DEFAULT_SIZE))
+argparser.add_argument("-o", "--output-dir", default=DEFAULT_OUTPUT_DIR, 
+                       help="Directory path for downloaded media files. Default: a new directory will be created under current directory")
+#argparser.add_argument("-f", "--output-filename-format", choices=RECORD_TYPES, default=DEFAULT_UUID_FILENAME_TYPE, 
+#                       help="Type of iDigBio identifier to use in the output filename. Default: '{0}'".format(DEFAULT_UUID_FILENAME_TYPE))
 arg_group = argparser.add_mutually_exclusive_group(required=True)
-arg_group.add_argument("-q", "--query", help="query in iDigBio query format")
-arg_group.add_argument("--query-file", help="file path containing query string in iDigBio Query Format")
-arg_group.add_argument("--records-uuids-file", help="file path containing list of iDigBio record uuids, one per line")
-arg_group.add_argument("--mediarecords-uuids-file", help="file path containing list of iDigBio mediarecord uuids, specified one per line")
-
+arg_group.add_argument("-q", "--query", 
+                       help="query in iDigBio Query Format.")
+arg_group.add_argument("--query-file",
+                       help="file path containing query string in iDigBio Query Format")
+arg_group.add_argument("--records-uuids-file",
+                       help="file path containing list of iDigBio record uuids, one per line")
+arg_group.add_argument("--mediarecords-uuids-file",
+                       help="file path containing list of iDigBio mediarecord uuids, specified one per line")
 args = argparser.parse_args()
 
+MAX_RESULTS = args.max
+SIZE = args.size
+
+output_directory = args.output_dir
+#output_filename_format = args.output_filename_format
+
+
+def read_query_file(inputfilename):
+    return '{"genus":"acer"}'
+
+
+if args.query:
+    # use the query as supplied on the command line
+    query = args.query
+if args.query_file:
+    query = read_query_file(args.query_file)
+if args.records_uuids_file:
+    #print (args.records-uuids-file)
+    query = args.records_uuids_file
+if args.mediarecords_uuids_file:
+    query = args.mediarecords_uuids_file
+
+
+if query is None:
+    print ("*** ERROR! Query source is empty or unusable.")
+else:
+    try:
+        query_json = json.loads(query)
+    except Exception as e:
+        print ('*** FATAL ERROR parsing query string:')
+        print (e)
+        print ('*** Supplied query string:')
+        print (query)
+        raise SystemExit
+
+print (query)
+print (query_json)
+print (MAX_RESULTS)
+print (SIZE)
+print (output_directory)
 
 raise SystemExit
 
 ## here parse the parameters
+
 
 
 
@@ -67,21 +124,8 @@ raise SystemExit
 # See iDigBio Query Format for help on query syntax
 #    https://github.com/idigbio/idigbio-search-api/wiki/Query-Format
 
-query = {"scientificname": "elephantopus elatus", "hasImage": True}
+query = {"scientificname": "elephantopus elatus"}
 
-# Edit the 'size' variable to change which variant of the media derivative to download.
-# Valid sizes are 'thumbnail', 'webview', and 'fullsize'
-
-size = 'webview'
-
-
-# Edit the 'output_directory' variable to specific a full file path or directory for the 
-# downloads. Leaving as-is will download to temporary directory under the current dir.
-
-output_directory = None
-#output_directory = '/path/to/place/for/media'
-
-MAX_RESULTS = 1000
 
 ################
 
@@ -95,7 +139,7 @@ Download a media file to a directory and name it based on the input parameters.
 
  'uuid' is used to uniquely identify the output filename.
 
- 'size' is the class of image derivative, useful in the output filename.
+ 'SIZE' is the class of image derivative, useful in the output filename.
 
 """
     try:
@@ -106,8 +150,8 @@ Download a media file to a directory and name it based on the input parameters.
         print('Error: ' + e)
         return False
 
-    # Output filenames will be of the form: {record_uuid}_{size}.jpg
-    local_filepath = os.path.join(output_dir,  uuid + '_' + size + '.jpg')
+    # Output filenames will be of the form: {record_uuid}_{SIZE}.jpg
+    local_filepath = os.path.join(output_dir,  uuid + '_' + SIZE + '.jpg')
 
     try:
         with open(local_filepath, 'wb') as out_file:
@@ -156,9 +200,9 @@ if __name__ == '__main__':
         # it will not download multiple copies of the media.
         specimen_record_uuid = each['indexTerms']['records'][0]
         media_record_uuid = each['indexTerms']['uuid']
-        media_url = 'https://api.idigbio.org/v2/media/' + media_record_uuid + '?size=' + size
+        media_url = 'https://api.idigbio.org/v2/media/' + media_record_uuid + '?size=' + SIZE
         print ("Downloading: '{0}'".format(media_url))
-        if get_media_with_naming(output_directory, media_url, specimen_record_uuid, size):
+        if get_media_with_naming(output_directory, media_url, specimen_record_uuid, SIZE):
             successes += 1
         else:
             failures += 1
