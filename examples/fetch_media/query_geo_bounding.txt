@@ -1,0 +1,13 @@
+{
+  "geopoint": {
+    "type": "geo_bounding_box",
+    "top_left": {
+      "lat": 19.23,
+      "lon": -130
+    },
+    "bottom_right": {
+      "lat": -45.1119,
+      "lon": 179.99999
+    }
+  }
+}

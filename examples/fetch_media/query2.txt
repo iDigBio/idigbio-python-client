@@ -1,0 +1,7 @@
+{
+    "scientificname": {
+        "type": "exists"
+    },
+    "family": "asteraceae"
+}
+

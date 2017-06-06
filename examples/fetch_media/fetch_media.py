@@ -28,7 +28,7 @@ help_blob = """
 
     ### Sample ###
 
-    $ python fetch_media.py -o /tmp/idigbio_media_downloads -m 5 -q '{"genus": "acer", "hasMedia": "true"}'
+    $ python fetch_media.py -o /tmp/idigbio_media_downloads -m 5 -q '{"genus": "acer"}'
     <snip>
     DOWNLOADING FINISHED with 5 successes and 0 failures
 
@@ -48,16 +48,16 @@ help_blob = """
 
 """
 
-# This is a safety limit to keep an erroneous query from downloading all of iDigBio's media.
-# Change this value if you are legitimately trying to download more media.
+# MAX_MAX_COUNT is a safety limit to keep an erroneous query from downloading all of iDigBio's media.
+# Change this value if you are legitimately trying to download more than 100k media.
+# Also, please consider letting us know that you are doing this because we are interested
+# in these kinds of use cases.   idigbio@acis.ufl.edu
 MAX_MAX_COUNT = 100000
 
 DEFAULT_MAX_COUNT = 100
 SIZES = ["thumbnail", "webview", "fullsize"]
 DEFAULT_SIZE = "webview"
 DEFAULT_OUTPUT_DIR = None
-#RECORD_TYPES = ["record", "mediarecord"]
-#DEFAULT_UUID_FILENAME_TYPE = "mediarecord"
 
 argparser = argparse.ArgumentParser(description=help_blob, formatter_class=argparse.RawDescriptionHelpFormatter)
 argparser.add_argument("-m", "--max", type=int, default=DEFAULT_MAX_COUNT,
@@ -66,8 +66,6 @@ argparser.add_argument("-s", "--size", choices=SIZES, default=DEFAULT_SIZE,
                        help="Size of derivative to download. Default: '{0}'".format(DEFAULT_SIZE))
 argparser.add_argument("-o", "--output-dir", default=DEFAULT_OUTPUT_DIR, 
                        help="Directory path for downloaded media files. Default: a new directory will be created under current directory")
-#argparser.add_argument("-f", "--output-filename-format", choices=RECORD_TYPES, default=DEFAULT_UUID_FILENAME_TYPE, 
-#                       help="Type of iDigBio identifier to use in the output filename. Default: '{0}'".format(DEFAULT_UUID_FILENAME_TYPE))
 arg_group = argparser.add_mutually_exclusive_group(required=True)
 arg_group.add_argument("-q", "--query", 
                        help="query in iDigBio Query Format.")
@@ -83,25 +81,46 @@ MAX_RESULTS = min(args.max, MAX_MAX_COUNT)
 SIZE = args.size
 
 output_directory = args.output_dir
-#output_filename_format = args.output_filename_format
 
+QUERY_TYPE = 'rq'
 
-def read_query_file(inputfilename):
-    return '{"genus":"acer"}'
+def read_query_file(query_filename):
+    if os.path.isfile(query_filename):
+        with open(query_filename, 'r') as queryfile:
+            q = queryfile.read()
+            return q
+    else:
+        print ("*** Error: query file could not be read or does not exist.")
+        raise SystemExit
 
+def get_query_from_uuids_list_file(uuids_file):
+    uuids_from_file = []
+    with open(uuids_file) as uf:
+        for line in uf:
+            uuids_from_file.append(line.strip())
+    
+    q = '{"uuid":'
+    q += json.dumps(uuids_from_file)
+    q += '}'
+    return q
+
+query = None
 
 if args.query:
     # use the query as supplied on the command line
     query = args.query
 if args.query_file:
+    # use the query as supplied in a file
     query = read_query_file(args.query_file)
 if args.records_uuids_file:
-    #print (args.records-uuids-file)
-    query = args.records_uuids_file
+    # generate a query from a list of record uuids
+    query = get_query_from_uuids_list_file(args.records_uuids_file)
 if args.mediarecords_uuids_file:
-    query = args.mediarecords_uuids_file
+    # generate a query from a list of mediarecord uuids
+    query = get_query_from_uuids_list_file(args.mediarecords_uuids_file)
+    QUERY_TYPE = 'mq'
 
-
+# Verify that the provided query string is valid JSON
 if query is None:
     print ("*** ERROR! Query source is empty or unusable.")
 else:
@@ -133,21 +152,7 @@ else:
             print ("*** ERROR! Could not create directroy for output: '{0}'".format(os.path.abspath(output_directory)))
             raise SystemExit
 
-#print ("Using Output Directory: '{0}'".format(os.path.abspath(output_directory)))
 
-
-################
-
-# Edit the 'query' variable to change the search query. The query is used to filter
-# specimen records, the script downloads associated media.
-
-# See iDigBio Query Format for help on query syntax
-#    https://github.com/idigbio/idigbio-search-api/wiki/Query-Format
-
-#query = {"scientificname": "elephantopus elatus"}
-
-
-################
 
 def get_media_with_naming (output_dir, media_url, uuid, size):
     """
@@ -184,40 +189,42 @@ if __name__ == '__main__':
 
     api = iDbApiJson()
 
-
     print ()
     print ("Using query:")
     print ()
     print (query)
     print ()
-    #print (query_json)
     print ("OPERATING PARAMETERS...")
     print ()
     print ("Maximum number of media to fetch: {:d}".format(MAX_RESULTS))
     print ("Media derivative size: {0}".format(SIZE))
     print ("Output directory: {0}".format(os.path.abspath(output_directory)))
+    print ("Query Type: {0}".format(QUERY_TYPE))
 
-
+    print ()
     print ("EXECUTING SEARCH QUERY...")
     print ()
-    results = api.search_media(rq=query, limit=MAX_RESULTS)
+    if QUERY_TYPE == 'mq':
+        results = api.search_media(mq=query, limit=MAX_RESULTS)
+    else:
+        results = api.search_media(rq=query, limit=MAX_RESULTS)
     print ()
-    print ("Search Query produced {:d} results.".format(results['itemCount']))
+    print ("Search query produced {:d} results.".format(results['itemCount']))
     print ()
     if results['itemCount'] == 0:
         print ("Nothing to download. Exiting.")
         raise SystemExit
     if results['itemCount'] > MAX_RESULTS:
-        print ("*** WARNING: search query produced more results than designated maximum number of media to fetch.")
+        print ("*** WARNING: search query produced more results than the designated maximum number of media to fetch.")
         print ("*** Use the -m or --max parameter to increase the maximum number of media to fetch.")
     print ()
     print("BEGINNING DOWNLOADS NOW...")
+    print ()
 
     successes = 0
     failures = 0
 
     for each in results['items']:
-        #specimen_record_uuid = each['indexTerms']['records'][0]
         media_record_uuid = each['indexTerms']['uuid']
         media_url = 'https://api.idigbio.org/v2/media/' + media_record_uuid + '?size=' + SIZE
         print ("Downloading: '{0}'".format(media_url))

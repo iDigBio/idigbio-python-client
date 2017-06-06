@@ -1,0 +1,8 @@
+{
+  "geopoint": {
+    "type": "geo_distance",
+    "distance": "100km",
+    "lat": -41.1119,
+    "lon": 145.323
+  }
+}
