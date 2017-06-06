@@ -14,7 +14,7 @@ except ImportError as e:
 help_blob = """
 
     This script will download media that are associated with the specimens
-    returned by an iDigBio search query.
+    returned by an iDigBio specimen record search query.
 
     The iDigBio Query Format is documented at
 
@@ -26,31 +26,42 @@ help_blob = """
         Omitting this parameter will cause a new directory to be created
         under the current directory, named in a timestamp-like style.
 
+    ### Sample ###
 
-    Example, download media for scientific name Elephantopos elatus:
+    $ python fetch_media.py -o /tmp/idigbio_media_downloads -m 5 -q '{"genus": "acer", "hasMedia": "true"}'
+    <snip>
+    DOWNLOADING FINISHED with 5 successes and 0 failures
 
-        $ python fetch_media.py  \\
-            -q '{"scientificname": "elephantopus elatus"}'
+    Media downloads are in output directory: '/tmp/idigbio_media_downloads'
 
-    The defaults of this script will create a subdirectory under the current
-    directory with the images inside named in a timestamp-like style.
+    $ ls -l /tmp/idigbio_media_downloads
+    total 604
+    -rw-rw-r-- 1 dstoner dstoner  93767 Jun  6 09:19 0c9b4669-edaa-467d-b240-f3311c764c04_webview.jpg
+    -rw-rw-r-- 1 dstoner dstoner 114132 Jun  6 09:19 1f2dbb2b-75ba-48cb-b34c-1ca003b4a38d_webview.jpg
+    -rw-rw-r-- 1 dstoner dstoner 147900 Jun  6 09:19 56f84bfe-5095-4fbb-b9e0-08cef3fdb448_webview.jpg
+    -rw-rw-r-- 1 dstoner dstoner 117882 Jun  6 09:19 6a0d0c92-d2be-4ae5-9fef-60453778b0f0_webview.jpg
+    -rw-rw-r-- 1 dstoner dstoner 136202 Jun  6 09:19 b98b9704-5ac5-4b53-b74d-d2d4d7d46ddd_webview.jpg
+    ###
 
-### need an example here:
-    $ ls -latr 201705171XXXXXX | head -n3
+    The media record for the first download above would be viewable in the iDigBio portal at
+    https://www.idigbio.org/portal/mediarecords/0c9b4669-edaa-467d-b240-f3311c764c04
 
 """
 
+# This is a safety limit to keep an erroneous query from downloading all of iDigBio's media.
+# Change this value if you are legitimately trying to download more media.
+MAX_MAX_COUNT = 100000
+
+DEFAULT_MAX_COUNT = 100
 SIZES = ["thumbnail", "webview", "fullsize"]
 DEFAULT_SIZE = "webview"
-DEFAULT_MAX_COUNT = 100
-MAX_MAX_COUNT = 5000
 DEFAULT_OUTPUT_DIR = None
 #RECORD_TYPES = ["record", "mediarecord"]
 #DEFAULT_UUID_FILENAME_TYPE = "mediarecord"
 
 argparser = argparse.ArgumentParser(description=help_blob, formatter_class=argparse.RawDescriptionHelpFormatter)
 argparser.add_argument("-m", "--max", type=int, default=DEFAULT_MAX_COUNT,
-                       help="Maximum number of records to be returned from search query. Default: {0}".format(DEFAULT_MAX_COUNT))
+                       help="Maximum number of records to be returned from search query. Default: {0}, Maximum allowed value: {1}".format(DEFAULT_MAX_COUNT,MAX_MAX_COUNT))
 argparser.add_argument("-s", "--size", choices=SIZES, default=DEFAULT_SIZE, 
                        help="Size of derivative to download. Default: '{0}'".format(DEFAULT_SIZE))
 argparser.add_argument("-o", "--output-dir", default=DEFAULT_OUTPUT_DIR, 
@@ -65,10 +76,10 @@ arg_group.add_argument("--query-file",
 arg_group.add_argument("--records-uuids-file",
                        help="file path containing list of iDigBio record uuids, one per line")
 arg_group.add_argument("--mediarecords-uuids-file",
-                       help="file path containing list of iDigBio mediarecord uuids, specified one per line")
+                       help="file path containing list of iDigBio mediarecord uuids, one per line")
 args = argparser.parse_args()
 
-MAX_RESULTS = args.max
+MAX_RESULTS = min(args.max, MAX_MAX_COUNT)
 SIZE = args.size
 
 output_directory = args.output_dir
@@ -103,17 +114,26 @@ else:
         print (query)
         raise SystemExit
 
-print (query)
-print (query_json)
-print (MAX_RESULTS)
-print (SIZE)
-print (output_directory)
 
-raise SystemExit
+# The following should work whether one has specified an existing directory name, created a new directory by name,
+# or left the output_directory unspecified.
+if output_directory is None:
+    now_ms = str(time.time())
+    output_directory = time.strftime("%Y%m%d%H%M%S") + "." + str(time.time()).rsplit('.')[ len(now_ms.rsplit('.')) - 1]
+    try:
+        os.makedirs(output_directory)
+    except:
+        print ("*** ERROR! Could not create directroy for output: '{0}'".format(os.path.abspath(output_directory)))
+        raise SystemExit
+else:
+    if not os.path.exists(output_directory):
+        try:
+            os.makedirs(output_directory)              
+        except:
+            print ("*** ERROR! Could not create directroy for output: '{0}'".format(os.path.abspath(output_directory)))
+            raise SystemExit
 
-## here parse the parameters
-
-
+#print ("Using Output Directory: '{0}'".format(os.path.abspath(output_directory)))
 
 
 ################
@@ -124,7 +144,7 @@ raise SystemExit
 # See iDigBio Query Format for help on query syntax
 #    https://github.com/idigbio/idigbio-search-api/wiki/Query-Format
 
-query = {"scientificname": "elephantopus elatus"}
+#query = {"scientificname": "elephantopus elatus"}
 
 
 ################
@@ -145,12 +165,11 @@ Download a media file to a directory and name it based on the input parameters.
     try:
         response = requests.get(media_url, stream=True)
         response.raise_for_status()
-        #            r.
     except (requests.exceptions.HTTPError, requests.exceptions.ConnectionError) as e:
-        print('Error: ' + e)
+        print('*** ERROR: ' + e)
         return False
 
-    # Output filenames will be of the form: {record_uuid}_{SIZE}.jpg
+    # Output filenames will be of the form: {mediarecord_uuid}_{SIZE}.jpg
     local_filepath = os.path.join(output_dir,  uuid + '_' + SIZE + '.jpg')
 
     try:
@@ -165,46 +184,49 @@ if __name__ == '__main__':
 
     api = iDbApiJson()
 
-    print ("Begin!")
-    print ("MAX_RESULTS is set to: '{0}'".format(MAX_RESULTS))
-    print ("Executing search query: {0}".format(query))
-    results = api.search_media(rq=query, limit=MAX_RESULTS)
-    print ("Search Query produced '{0}' results.".format(results['itemCount']))
 
-    # The following should work whether one has specified an existing directory name, created a new directory by name,
-    # or left the output_directory unspecified.
-    if output_directory is None:
-        now_ms = str(time.time())
-        output_directory = time.strftime("%Y%m%d%H%M%S") + "." + str(time.time()).rsplit('.')[ len(now_ms.rsplit('.')) - 1]
-        try:
-            os.makedirs(output_directory)
-        except:
-            print ("ERROR! Could not create directroy for output: '{0}'".format(os.path.abspath(output_directory)))
-            raise SystemExit
-    else:
-        if not os.path.exists(output_directory):
-            try:
-                os.makedirs(output_directory)              
-            except:
-                print ("ERROR! Could not create directroy for output: '{0}'".format(os.path.abspath(output_directory)))
-                raise SystemExit
-    
-    print ("Using Output Directory: '{0}'".format(os.path.abspath(output_directory)))
+    print ()
+    print ("Using query:")
+    print ()
+    print (query)
+    print ()
+    #print (query_json)
+    print ("OPERATING PARAMETERS...")
+    print ()
+    print ("Maximum number of media to fetch: {:d}".format(MAX_RESULTS))
+    print ("Media derivative size: {0}".format(SIZE))
+    print ("Output directory: {0}".format(os.path.abspath(output_directory)))
+
+
+    print ("EXECUTING SEARCH QUERY...")
+    print ()
+    results = api.search_media(rq=query, limit=MAX_RESULTS)
+    print ()
+    print ("Search Query produced {:d} results.".format(results['itemCount']))
+    print ()
+    if results['itemCount'] == 0:
+        print ("Nothing to download. Exiting.")
+        raise SystemExit
+    if results['itemCount'] > MAX_RESULTS:
+        print ("*** WARNING: search query produced more results than designated maximum number of media to fetch.")
+        print ("*** Use the -m or --max parameter to increase the maximum number of media to fetch.")
+    print ()
+    print("BEGINNING DOWNLOADS NOW...")
 
     successes = 0
     failures = 0
 
-    print ("Starting downloads...")
     for each in results['items']:
-        # Note that this will only get the first specimen uuid that is related to the media,
-        # it will not download multiple copies of the media.
-        specimen_record_uuid = each['indexTerms']['records'][0]
+        #specimen_record_uuid = each['indexTerms']['records'][0]
         media_record_uuid = each['indexTerms']['uuid']
         media_url = 'https://api.idigbio.org/v2/media/' + media_record_uuid + '?size=' + SIZE
         print ("Downloading: '{0}'".format(media_url))
-        if get_media_with_naming(output_directory, media_url, specimen_record_uuid, SIZE):
+        if get_media_with_naming(output_directory, media_url, media_record_uuid, SIZE):
             successes += 1
         else:
             failures += 1
-        
-    print ("Finished downloads to output directory: '{0}' with '{1}' successes and '{2}' failures".format(output_directory, successes, failures))
+
+    print () 
+    print ("DOWNLOADING FINISHED with {0:d} successes and {1:d} failures".format(successes, failures))
+    print ()
+    print ("Media downloads are in output directory: '{0}'".format(os.path.abspath(output_directory)))
