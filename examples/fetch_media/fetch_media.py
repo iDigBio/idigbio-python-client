@@ -171,7 +171,13 @@ Download a media file to a directory and name it based on the input parameters.
         response = requests.get(media_url, stream=True)
         response.raise_for_status()
     except (requests.exceptions.HTTPError, requests.exceptions.ConnectionError) as e:
-        print('*** ERROR: ' + e)
+        print('*** HTTP ERROR: ' + e)
+        return False
+
+    ### iDigBio returns 200 OK and displays an SVG status image when a derivative
+    ### is not present.  Check for "Content-Type: image/svg+xml" header to notice this condition.
+    if response.headers['Content-Type'] == 'image/svg+xml':
+        print("*** WARNING - No media at '{0}'".format(media_url))
         return False
 
     # Output filenames will be of the form: {mediarecord_uuid}_{SIZE}.jpg
