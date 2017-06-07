@@ -77,7 +77,7 @@ arg_group.add_argument("--mediarecords-uuids-file",
                        help="file path containing list of iDigBio mediarecord uuids, one per line")
 args = argparser.parse_args()
 
-MAX_RESULTS = min(args.max, MAX_MAX_COUNT)
+MAX_RESULTS = max(0,(min(args.max, MAX_MAX_COUNT)))
 SIZE = args.size
 
 output_directory = args.output_dir
@@ -171,7 +171,7 @@ Download a media file to a directory and name it based on the input parameters.
         response = requests.get(media_url, stream=True)
         response.raise_for_status()
     except (requests.exceptions.HTTPError, requests.exceptions.ConnectionError) as e:
-        print('*** HTTP ERROR: ' + e)
+        print('*** HTTP ERROR: {0}'.format(e))
         return False
 
     ### iDigBio returns 200 OK and displays an SVG status image when a derivative
@@ -217,7 +217,7 @@ if __name__ == '__main__':
     print ()
     print ("Search query produced {:d} results.".format(results['itemCount']))
     print ()
-    if results['itemCount'] == 0:
+    if results['itemCount'] == 0 or MAX_RESULTS == 0:
         print ("Nothing to download. Exiting.")
         raise SystemExit
     if results['itemCount'] > MAX_RESULTS:
