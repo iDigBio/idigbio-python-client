@@ -75,8 +75,13 @@ https://github.com/idigbio/idigbio-search-api/wiki/Query-Format
 
 ### Specify a query on the command-line
 
-It is best to wrap the query string in single quotes to protect the contents from shell interpretation.
+Different operating systems display different behaviors when dealing with quotes and curly braces.
 
+On Unix-like operating systems is best to wrap the query string in single quotes to protect the contents from shell interpretation.
+
+On Windows, the query string cannot be wrapped in single quotes and double-quotes must be escaped with a backslash.
+
+In many cases it may be best to specify the query in a text file and use the --query-file option instead of -q / --query.
 
 ```
 $ python fetch_media.py -q '{"scientificname":"isotelus maximus"}'
