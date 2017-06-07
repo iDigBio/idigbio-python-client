@@ -297,6 +297,11 @@ can download the associated media.
 Note that in this case the records have more than one media associated with them so we end up with more than 3 images after specifying only 3 record uuids.
 
 ```
+$ cat record_uuids_list.txt 
+a494a2a6-b64b-4f99-b26c-53bfdcd54876
+ddc56589-7009-4fe6-81d8-d9c9219a503f
+9f7f4ba7-0def-4b01-b806-9089dcb7382c
+
 $ python fetch_media.py --records-uuids-file record_uuids_list.txt -o /tmp/idigbio_media_downloads
 
 Using query:
