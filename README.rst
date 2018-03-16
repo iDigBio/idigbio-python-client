@@ -23,6 +23,14 @@ pandas as well.
 
     pip install idigbio pandas
 
+If you see InsecurePlatformWarning or have other SSL certificate verification issues, you may 
+wish to install urllib3 with the secure extra.
+
+.. code-block::
+
+    pip install urllib3[secure]
+
+
 Basic Usage
 -----------
 

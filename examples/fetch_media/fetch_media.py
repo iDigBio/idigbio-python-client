@@ -4,6 +4,7 @@ try:
     import requests
     import shutil
     import os
+    import sys
     import time
     import argparse
     import json
@@ -66,6 +67,8 @@ argparser.add_argument("-s", "--size", choices=SIZES, default=DEFAULT_SIZE,
                        help="Size of derivative to download. Default: '{0}'".format(DEFAULT_SIZE))
 argparser.add_argument("-o", "--output-dir", default=DEFAULT_OUTPUT_DIR, 
                        help="Directory path for downloaded media files. Default: a new directory will be created under current directory")
+argparser.add_argument("-d", "--debug", default=False, action='store_true',
+                       help="enable debugging output")
 arg_group = argparser.add_mutually_exclusive_group(required=True)
 arg_group.add_argument("-q", "--query", 
                        help="query in iDigBio Query Format.")
@@ -83,6 +86,19 @@ SIZE = args.size
 output_directory = args.output_dir
 
 QUERY_TYPE = 'rq'
+
+debug_flag = args.debug
+if debug_flag:
+    print ()
+    print ("** DEBUGGING ENABLED **")
+    print ()
+    print ()
+    modulenames = set(sys.modules)&set(globals())
+    allmodules = [sys.modules[name] for name in modulenames]
+    print ("Loaded modules...")
+    for each_mod in allmodules:
+        print (each_mod)
+    print ()
 
 def read_query_file(query_filename):
     if os.path.isfile(query_filename):
@@ -214,6 +230,10 @@ if __name__ == '__main__':
         results = api.search_media(mq=query, limit=MAX_RESULTS)
     else:
         results = api.search_media(rq=query, limit=MAX_RESULTS)
+    print ()
+    if debug_flag:
+        print ("Results JSON:")
+        print (json.dumps(results))
     print ()
     print ("Search query produced {:d} results.".format(results['itemCount']))
     print ()
