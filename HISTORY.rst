@@ -3,17 +3,24 @@
 Release History
 ---------------
 
+0.8.5 (2018-03-16)
+++++++++++++++++++
+
+**New**
+
+- add debug command-line option
+
 0.8.4 (2017-06-07)
 ++++++++++++++++++
 
 **New**
 
-- added full-featured example script fetch_media.py to download media from iDigBio
-- added documentation for fetch_media
+- add full-featured example script fetch_media.py to download media from iDigBio
+- add documentation for fetch_media
 
 **Changes**
 
-- removed fetch_media_based_on_query.py which is superceded by fetch_media.py
+- remove fetch_media_based_on_query.py which is superceded by fetch_media.py
 
 0.8.3.3 (2017-05-17)
 ++++++++++++++++++++
