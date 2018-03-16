@@ -43,7 +43,7 @@ class TestIDbApiJson(unittest.TestCase):
 
     def test_view(self):
         api = iDbApiJson()
-        r = api.view("records","bc5510a4-4cc5-4731-a023-8827fdf58e61")
+        r = api.view("records","56c351b5-30c0-4529-a57f-60c451cc5876")
         self.assertIsNotNone(r)
 
     def test_count_media(self):
