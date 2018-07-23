@@ -2,12 +2,7 @@ from __future__ import print_function
 try:
     from idigbio.json_client import iDbApiJson
     import requests
-#    import shutil
-#    import os
-#    import sys
-#    import time
     import argparse
-#    import json
 except ImportError as e:
     print ("IMPORT ERROR (This exception is likely caused by a missing module): '{0}'".format(e))
     raise SystemExit
