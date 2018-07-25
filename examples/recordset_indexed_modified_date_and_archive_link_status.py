@@ -68,7 +68,8 @@ def print_recordset_view_data(api,uuid):
         # recordset_item_from_api[""],
         check_archive_status(recordset_item_from_api["indexTerms"]["indexData"]["link"])
         ]
-    print(*the_important_data, sep="\t")
+    line = "\t".join(the_important_data)
+    print(line.encode("utf-8"))
     
 
 if args.uuids_file:
