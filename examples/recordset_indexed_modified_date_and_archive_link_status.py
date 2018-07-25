@@ -64,7 +64,8 @@ def print_recordset_view_data(api,uuid):
         recordset_item_from_api["indexTerms"]["indexData"]["update"],
         recordset_item_from_api["indexTerms"]["name"],
         recordset_item_from_api["indexTerms"]["indexData"]["link"],
-#        recordset_item_from_api[""],
+        # Does not yet include contacts or other data.
+        # recordset_item_from_api[""],
         check_archive_status(recordset_item_from_api["indexTerms"]["indexData"]["link"])
         ]
     print(*the_important_data, sep="\t")
