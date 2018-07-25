@@ -3,6 +3,13 @@
 Release History
 ---------------
 
+0.8.6 (TBD)
+++++++++++++++++++
+
+**Changes**
+
+- Drop support for Python 3.3 (following the lead of Pandas library)
+
 0.8.5 (2018-03-16)
 ++++++++++++++++++
 
