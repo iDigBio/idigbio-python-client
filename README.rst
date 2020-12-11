@@ -5,7 +5,7 @@ idigbio-python-client
     :target: https://pypi.python.org/pypi/idigbio
 
 .. image:: https://img.shields.io/travis/iDigBio/idigbio-python-client.svg
-        :target: https://travis-ci.org/iDigBio/idigbio-python-client
+        :target: https://travis-ci.com/iDigBio/idigbio-python-client
 
 A python client for the `iDigBio <https://www.idigbio.org/>`_ iDigBio v2 API.
 
